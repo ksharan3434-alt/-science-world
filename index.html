@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Science World - RK Physics</title>
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "cfeb0dad-4c42-4824-a8c6-c6d79dc01f73",
+                autoRegister: false
+            });
+        });
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-cream: #fffdf9;
+            --brand-maroon: #4a121a;
+            --brand-gold: #c99d42;
+            --input-border: #ebdcb9;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #120305;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            height: 100vh;
+            background-color: var(--bg-cream);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--brand-maroon); border-radius: 4px; }
+        
+        .brand-header-gradient {
+            background: #4a121a;
+        }
+        .gold-border-card {
+            border: 2px solid var(--brand-gold);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(74, 18, 26, 0.05);
+        }
+        .drag-over {
+            border-color: var(--brand-gold) !important;
+            background-color: #f7eed8 !important;
+        }
+
+        /* --- NEW ZOOM-IN ANIMATION FOR SPLASH SCREEN --- */
+        @keyframes customZoomIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-zoom-in {
+            animation: customZoomIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        /* Circular logo crop styling */
+        .splash-logo-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--brand-gold);
+            box-shadow: 0 0 25px rgba(201, 157, 66, 0.4);
+            background-color: #ffffff; 
+            margin: 0 auto;
+        }
+        .splash-logo-container img {
+            width: 115%; 
+            height: 115%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center">
+
+    <div class="app-shell overflow-hidden text-slate-800">
+        
+        <div id="customPushPromptModal" class="absolute inset-0 bg-black/80 z-[290] hidden flex flex-col justify-center items-center p-4 backdrop-blur-sm">
+            <div class="gold-border-card p-6 w-full max-w-sm text-center space-y-4 bg-white animate-fade-in">
+                <div class="w-16 h-16 bg-[#4a121a]/10 rounded-full flex items-center justify-center mx-auto border border-[#c99d42]">
+                    <i class="fas fa-bell text-2xl text-[#c99d42] animate-bounce"></i>
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-[#4a121a]">Notification Permissions</h4>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Important class updates, batch dynamic schedules aur notes alerts paane ke liye notifications allow karein.</p>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handlePushSkip()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition-all">Later (Skip)</button>
+                    <button onclick="handlePushAllow()" class="flex-1 bg-[#4a121a] hover:bg-[#340c12] text-white py-2.5 rounded-xl text-xs font-bold shadow-md tracking-wide transition-all">Allow Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="appSplashScreen" class="absolute inset-0 bg-[#4a121a] z-[300] flex flex-col justify-center items-center transition-opacity duration-700 pointer-events-none">
+            <div class="text-center space-y-3 animate-zoom-in">
+                <div class="splash-logo-container">
+                    <img src="Screenshot2026-05-02175414.jpeg" alt="RK Physics Logo">
+                </div>
+                <h1 class="text-2xl font-bold tracking-widest text-white mt-4">SCIENCE <span class="text-[#c99d42]">WORLD</span></h1>
+                <p class="text-[10px] tracking-widest text-[#ebdcb9] font-light">BY RK PHYSICS MATRIX</p>
+            </div>
+        </div>
+
+        <div id="appLaunchBannerModal" class="absolute inset-0 bg-black/80 z-[280] hidden flex flex-col justify-center items-center p-4">
+            <div class="relative w-full max-w-sm rounded-2xl overflow-hidden bg-white border border-[#c99d42]">
+                <div id="launchBannerMediaContainer" class="w-full h-80 bg-slate-900 flex items-center justify-center"></div>
+                <button onclick="closeLaunchBannerPanelManually()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm transition-all"><i class="fas fa-forward mr-1"></i> Skip</button>
+            </div>
+        </div>
+
+        <div id="globalAdminAnnounceDropdownBar" class="absolute top-0 left-0 right-0 bg-amber-50 border-b border-[#c99d42] p-3 z-[140] transform -translate-y-full transition-transform duration-500 shadow-md flex items-start gap-2.5">
+            <div class="text-[#4a121a] mt-0.5"><i class="fas fa-bullhorn text-sm"></i></div>
+            <div class="flex-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-[#c99d42] block">System Update Broadcast</span>
+                <p id="globalAnnounceBarTxtNode" class="text-xs font-semibold text-slate-800 leading-normal">Loading message...</p>
+            </div>
+            <button onclick="document.getElementById('globalAdminAnnounceDropdownBar').classList.add('-translate-y-full')" class="text-slate-400 hover:text-slate-600 text-xs p-1"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div id="inAppToast" class="absolute top-4 left-4 right-4 bg-[#4a121a] text-white p-4 rounded-2xl z-[250] shadow-2xl border border-[#c99d42] flex items-center gap-3 transform -translate-y-32 transition-transform duration-300 pointer-events-none">
+            <div class="text-[#c99d42]"><i class="fas fa-bolt text-lg"></i></div>
+            <p id="inAppToastMsg" class="text-xs font-semibold flex-1">Processing...</p>
+        </div>
+
+        <div id="notificationModal" class="absolute inset-0 bg-black/60 z-[200] hidden flex flex-col justify-end p-0">
+            <div class="bg-white w-full h-[75%] rounded-t-3xl flex flex-col shadow-2xl transform transition-transform duration-300 translate-y-full" id="notificationModalContent">
+                <div class="p-4 border-b border-[#ebdcb9] flex justify-between items-center bg-slate-50 rounded-t-3xl">
+                    <h4 class="font-bold text-[#4a121a] text-sm"><i class="fas fa-bell text-[#c99d42] mr-2"></i>Notifications Hub</h4>
+                    <button onclick="closeNotifications()" class="text-slate-400 bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-300"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="notificationList" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 bg-white">
+                    <div class="text-center py-10 text-slate-400 text-xs animate-pulse">Loading updates...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminBatchAccessSuiteModal" class="absolute inset-0 bg-black/60 z-[130] flex items-center justify-center p-4 hidden">
+            <div class="gold-border-card p-5 w-full max-w-sm space-y-4">
+                <div>
+                    <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wide">Manage Authorized Batches</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Toggle live batch system nodes to authorize student login scope</p>
+                </div>
+                <div id="adminLiveBatchChecklistContainer" class="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-1"></div>
+                <div class="flex gap-2 justify-end pt-2 border-t border-slate-100">
+                    <button onclick="closeAdminBatchAccessSuiteModal()" class="bg-[#4a121a] text-white px-5 py-2 rounded-xl text-xs font-bold w-full">Save Permissions Tree</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="authModule" class="flex-1 flex flex-col justify-between overflow-y-auto custom-scroll bg-[#fffdf9]">
+            <div class="brand-header-gradient p-4 flex justify-between items-center shadow-md">
+                <div>
+                    <h1 class="text-base font-bold tracking-wide text-white">SCIENCE <span class="text-[#c99d42]">WORLD</span></h1>
+                    <span class="text-[9px] tracking-widest block text-slate-300 font-light">BY RK PHYSICS</span>
+                </div>
+                <div class="flex gap-4 text-white text-sm">
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-headphones"></i>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 flex-1 flex flex-col justify-center space-y-6">
+                <div class="text-center space-y-1.5">
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">Learn Concept-driven <span class="text-[#4a121a]">Physics Solutions</span></h2>
+                    <p class="text-[10px] text-slate-500 max-w-xs mx-auto leading-relaxed">Access premium locked smart digital classrooms, live testing material volumes and real-time support notes streams instantly.</p>
+                </div>
+
+                <div class="gold-border-card p-5 shadow-md bg-white">
+                    <h3 id="authTitle" class="text-lg font-bold text-center text-slate-800 mb-0.5">Welcome Back</h3>
+                    <p id="authSubtitle" class="text-[11px] text-center text-slate-500 mb-4">Login to unlock your premium batch space</p>
+                    
+                    <form id="authForm" class="space-y-3">
+                        <div id="signupNameField" class="hidden">
+                            <input type="text" id="authName" placeholder="Full Registered Name" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+                        </div>
+                        
+                        <input type="email" id="authEmail" required placeholder="Registered Student Email" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+                        <input type="password" id="authPassword" required placeholder="Secure System Account Password" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+                        
+                        <div id="authBatchSelectionWrapper">
+                            <select id="authClass" class="w-full bg-slate-50 text-slate-800 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+                                <option value="" class="text-slate-800">Select Targeted Batch Room</option>
+                                <option value="11th" class="text-slate-800">Class 11th (Foundation)</option>
+                                <option value="12th" class="text-slate-800">Class 12th (Target Batch)</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" id="authBtn" class="w-full bg-[#4a121a] text-white font-bold py-2.5 rounded-xl text-xs tracking-wide shadow-md mt-1">Sign In to Dashboard</button>
+                    </form>
+
+                    <div class="relative flex py-3 items-center">
+                        <div class="flex-1 border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-3 text-[10px] text-slate-400">Or Access via Integration</span>
+                        <div class="flex-1 border-t border-slate-200"></div>
+                    </div>
+
+                    <button type="button" onclick="handleGoogleLogin()" class="w-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl text-xs flex justify-center items-center gap-2 shadow-sm">
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-4 h-4 object-contain">
+                        <span>Connect with Google Account</span>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-xs text-slate-500"><span id="authToggleText">New Student?</span> <a href="javascript:void(0)" onclick="toggleAuthMode()" id="authToggleBtn" class="text-[#c99d42] font-semibold underline ml-0.5">Create Workspace Account</a></p>
+                </div>
+            </div>
+
+            <div class="bg-[#4a121a] py-2 text-center text-[9px] text-[#ebdcb9] border-t border-[#c99d42]/20">
+                &copy; 2026 Science World BY RK PHYSICS. Dedicated Smartphone App Space Portal.
+            </div>
+        </div>
+
+        <div id="appCore" class="hidden flex-1 flex flex-col overflow-hidden bg-[#fffdf9]">
+            
+            <div class="brand-header-gradient px-4 py-3 flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-2.5">
+                    <img id="userAvatar" src="https://www.w3schools.com/howto/img_avatar.png" class="w-9 h-9 rounded-full object-cover border-2 border-[#c99d42] bg-white">
+                    <div>
+                        <h4 id="userName" class="text-xs font-bold text-white tracking-wide truncate max-w-[130px]">Student</h4>
+                        <span id="userClassBadge" class="text-[9px] text-[#ebdcb9] block font-medium mt-0.5">Matrix Space</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="adminToggleViewBtn" class="hidden bg-[#c99d42] text-[#4a121a] font-extrabold text-[9px] px-2.5 py-1 rounded-md tracking-wider shadow-md" onclick="toggleAdminViewMode()">ADMIN MODULE</button>
+                    
+                    <button onclick="openNotifications()" class="relative text-white hover:text-[#c99d42] transition-colors">
+                        <i class="fas fa-bell text-sm"></i>
+                        <span id="notificationDot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                    </button>
+                    <button onclick="navigateToView('profile')" class="text-white hover:text-[#c99d42] transition-colors">
+                        <i class="fas fa-headphones text-sm"></i>
+                    </button>
+                    
+                    <button onclick="logoutSession()" class="text-slate-300 hover:text-red-400 text-sm ml-1"><i class="fas fa-power-off"></i></button>
+                </div>
+            </div>
+
+            <div id="mainWorkspaceScroll" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
+                
+                <div id="studentHomeView" class="space-y-4">
+                    
+                    <div class="relative w-full overflow-hidden rounded-2xl border border-[#ebdcb9] bg-slate-900 h-40 group">
+                        <div id="appMediaCarouselTrack" class="w-full h-full relative"></div>
+                        <button onclick="triggerManualCarouselShift(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs z-30 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-chevron-left"></i></button>
+                        <button onclick="triggerManualCarouselShift(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs z-30 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-3">Your Enrolled Classrooms</h3>
+                        <div id="coursesCatalogGrid" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div id="batchFoldersView" class="hidden space-y-4">
+                    <div class="flex items-center gap-2">
+                        <button onclick="navigateBackToBatches()" class="bg-[#4a121a] text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+                        <h3 id="currentBatchTitleHeader" class="text-sm font-bold text-slate-800 truncate">Folders Panel</h3>
+                    </div>
+                    <div id="foldersCatalogGrid" class="space-y-3"></div>
+                </div>
+
+                <div id="folderContentsView" class="hidden space-y-4">
+                    <div class="flex items-center gap-2">
+                        <button onclick="navigateBackToFolders()" class="bg-[#4a121a] text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+                        <h3 id="currentFolderTitleHeader" class="text-sm font-bold text-slate-800 truncate">Materials Panel</h3>
+                    </div>
+                    <div id="contentsCatalogGrid" class="space-y-3"></div>
+                </div>
+
+                <div id="chatRoomView" class="hidden flex flex-col h-[480px] bg-white rounded-2xl border border-[#ebdcb9] overflow-hidden shadow-inner">
+                    <div class="p-3 brand-header-gradient text-white text-xs font-bold flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><i class="fas fa-circle text-[8px] text-emerald-400 animate-pulse"></i> Doubt Stream Room (<span id="chatRoomLiveClassNodeBadge">...</span>)</span>
+                        <span class="bg-[#c99d42] text-[#4a121a] px-2 py-0.5 text-[8px] rounded font-bold uppercase">Live Terminal</span>
+                    </div>
+                    <div id="chatMessageFeed" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-4 bg-slate-50 flex flex-col"></div>
+                    <form id="chatSubmissionForm" class="p-2 bg-white border-t flex gap-2">
+                        <input type="text" id="chatInputMsg" required placeholder="Type your doubt stream here..." class="flex-1 border border-[#ebdcb9] rounded-xl px-3 text-xs text-slate-800 bg-slate-50 focus:outline-none focus:border-[#4a121a]">
+                        <button type="submit" class="bg-[#4a121a] text-white px-4 rounded-xl text-xs font-bold active:scale-95 transition-transform"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+
+                <div id="profileManagementView" class="hidden space-y-4">
+                    <div class="gold-border-card p-5 space-y-4 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider">Student Profile Workspace</h4>
+                        <div id="avatarDropZone" class="border-2 border-dashed border-[#ebdcb9] bg-slate-50 rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer min-h-[110px] relative overflow-hidden">
+                            <div class="drop-preview-container flex flex-col items-center">
+                                <img id="profilePreviewImage" src="https://www.w3schools.com/howto/img_avatar.png" class="w-16 h-16 rounded-full object-cover border-2 border-[#c99d42] mb-2">
+                                <p class="text-[10px] font-semibold text-[#4a121a]">Click / Drag & Drop Image to Update Profile</p>
+                            </div>
+                            <input type="file" id="fileUploadInput" accept="image/*" class="hidden">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">STUDENT DISPLAY NAME</label>
+                            <input type="text" id="profileInputName" class="w-full border border-[#ebdcb9] text-slate-800 rounded-xl p-2.5 text-xs bg-slate-50 focus:outline-none">
+                        </div>
+                        <button onclick="saveUserProfileData()" class="w-full bg-[#4a121a] text-white py-2.5 rounded-xl text-xs font-bold shadow-md">Apply Profile Settings</button>
+                    </div>
+
+                    <div id="studentSupportContainerBox" class="gold-border-card p-4 space-y-3 bg-white relative">
+                        <div id="supportRedDotNotificationBadge" class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-red-600 hidden animate-ping"></div>
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-headset text-[#c99d42] mr-1"></i> Technical Support Desk</h4>
+                        
+                        <div class="p-3 bg-amber-50/50 rounded-xl space-y-1.5 text-[11px] border border-[#ebdcb9]/40">
+                            <p class="text-slate-700 flex justify-between"><span><i class="fas fa-phone mr-1"></i> Phone:</span> <span id="supportPhoneNode" class="font-semibold text-slate-900">Loading...</span></p>
+                            <p class="text-slate-700 flex justify-between"><span><i class="fas fa-envelope mr-1"></i> Email:</span> <span id="supportEmailNode" class="font-semibold text-slate-900">Loading...</span></p>
+                            <p class="text-slate-700 flex justify-between"><span><i class="fas fa-map-marker-alt mr-1"></i> Address:</span> <span id="supportAddressNode" class="font-semibold text-slate-900 text-right">Loading...</span></p>
+                        </div>
+
+                        <div class="border-t pt-3 space-y-2">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Have a Query? Ask Admin</label>
+                            <textarea id="studentSupportQueryInput" placeholder="Type your concern or ticket request details here..." rows="3" class="w-full border border-[#ebdcb9] bg-slate-50 rounded-xl p-2 text-xs text-slate-800 focus:outline-none focus:border-[#4a121a]"></textarea>
+                            <button onclick="studentSubmitSupportQueryTicket()" class="w-full bg-[#c99d42] text-[#4a121a] font-bold py-2 rounded-xl text-xs shadow-sm">Upload Ticket Query</button>
+                        </div>
+
+                        <div class="space-y-2 mt-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Your Ticket Log Status</label>
+                            <div id="studentPersonalTicketsRoster" class="space-y-2 max-h-40 overflow-y-auto custom-scroll"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminControlView" class="hidden space-y-5">
+                    
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-bullhorn text-[#c99d42] mr-1"></i> Broadcast Overall App Message</h4>
+                        <input type="text" id="adminGlobalBroadcastMessageInput" placeholder="Enter dashboard dropdown notice context here..." class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 focus:outline-none text-slate-800">
+                        <button onclick="adminCommitGlobalNoticeDropdownBroadcast()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Deploy Global Dropdown Notice</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-rocket text-[#c99d42] mr-1"></i> Deploy 6s Launch Banner</h4>
+                        <div id="launchBannerDragZone" class="border border-dashed border-[#ebdcb9] p-4 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[70px] flex items-center justify-center bg-slate-50">
+                            <span class="drop-text">Drag & Drop Launch Cover Banner Graphic Here</span>
+                        </div>
+                        <input type="file" id="launchBannerFilePicker" accept="image/*" class="hidden">
+                        <button onclick="adminCommitLaunchBannerAssetToCloud()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Inject Launch Gate Screen Banner</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-tools text-[#c99d42] mr-1"></i> Update Global Support Details</h4>
+                        <input type="text" id="adminSupportPhone" placeholder="Support Mobile Phone Line" class="w-full border border-[#ebdcb9] rounded-xl p-2 text-xs bg-slate-50 focus:outline-none text-slate-800">
+                        <input type="email" id="adminSupportEmail" placeholder="Support Operational Email Account" class="w-full border border-[#ebdcb9] rounded-xl p-2 text-xs bg-slate-50 focus:outline-none text-slate-800">
+                        <input type="text" id="adminSupportAddress" placeholder="Physical Classroom Center Address" class="w-full border border-[#ebdcb9] rounded-xl p-2 text-xs bg-slate-50 focus:outline-none text-slate-800">
+                        <button onclick="adminCommitSupportDetailsToCloud()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Broadcast & Update Helpdesk</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-images text-[#c99d42] mr-1"></i> Inject Dynamic Carousel Banner</h4>
+                        
+                        <div id="carouselImgDragZone" class="border border-dashed border-[#ebdcb9] p-4 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[80px] flex items-center justify-center relative bg-slate-50">
+                            <span class="drop-text">Drag & Drop Banner Graphic Image Here</span>
+                            <input type="file" id="carouselImgFilePicker" accept="image/*" class="hidden">
+                        </div>
+
+                        <div id="carouselVidDragZone" class="border border-dashed border-[#ebdcb9] p-4 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[80px] flex items-center justify-center relative bg-slate-50">
+                            <span class="drop-text">Drag & Drop short Video Asset Here (&lt;=30s)</span>
+                            <input type="file" id="carouselVidFilePicker" accept="video/*" class="hidden">
+                        </div>
+
+                        <button onclick="adminDeployCarouselBannerNode()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Inject Custom Banner Node</button>
+                        
+                        <div class="border-t pt-2 space-y-2">
+                            <span class="text-[10px] font-bold text-slate-400 block uppercase">Active Carousel Slates Manager</span>
+                            <div id="adminCarouselBannersRemoverGrid" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scroll"></div>
+                        </div>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-envelope-open-text text-[#c99d42] mr-1"></i> Live Student Tickets Roster Desk</h4>
+                        <div id="adminDedicatedSupportQueriesRoster" class="space-y-3 max-h-60 overflow-y-auto custom-scroll"></div>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-plus-circle mr-1 text-[#c99d42]"></i> Create Root Batch Node</h4>
+                        <input type="text" id="adminNewBatchTitle" placeholder="Batch Display Title (e.g., 11th Electrostatics Pro)" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                        <select id="adminNewBatchAccess" class="w-full bg-white border border-[#ebdcb9] rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none">
+                            <option value="public">Public (Open Gateway Access)</option>
+                            <option value="private">Private (Requires Access Authorization)</option>
+                        </select>
+                        <div id="batchDragZone" class="border border-dashed border-[#ebdcb9] p-3 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[60px] flex items-center justify-center bg-slate-50">
+                            <span class="drop-text">Click / Drop Batch DP Cover Image Here</span>
+                        </div>
+                        <input type="file" id="batchFilePicker" accept="image/*" class="hidden">
+                        <button onclick="adminCommitBatchObjectToCloud()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Deploy Structural Batch</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-folder-plus mr-1 text-[#c99d42]"></i> Inject Folder inside Target Batch</h4>
+                        <select id="adminFolderParentSelect" onchange="syncAdminSubFolderOptionsDropdown()" class="w-full bg-white border border-[#ebdcb9] rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none">
+                            <option value="">-- Choose Target Parent Batch Container --</option>
+                        </select>
+                        <select id="adminSubFolderParentSelect" class="w-full bg-white border border-[#ebdcb9] rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none">
+                            <option value="">-- Main Root Folder (Leave empty if not a sub-folder) --</option>
+                        </select>
+                        <input type="text" id="adminNewFolderTitle" placeholder="Folder Display Name" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                        <div id="folderDragZone" class="border border-dashed border-[#ebdcb9] p-3 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[60px] flex items-center justify-center bg-slate-50">
+                            <span class="drop-text">Click / Drop Folder DP Image Here</span>
+                        </div>
+                        <input type="file" id="folderFilePicker" accept="image/*" class="hidden">
+                        <button onclick="adminCommitFolderObjectToCloud()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Inject Folder Node</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-file-circle-plus mr-1 text-[#c99d42]"></i> Material Upload Matrix Mapping</h4>
+                        <select id="adminContentBatchSelect" onchange="syncAdminFolderOptionsDropdown()" class="w-full bg-white border border-[#ebdcb9] rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none"><option value="">-- Choose Target Batch Matrix --</option></select>
+                        <select id="adminContentFolderSelect" class="w-full bg-white border border-[#ebdcb9] rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none"><option value="">-- Choose Target Folder Container --</option></select>
+                        <input type="text" id="adminContentTitle" placeholder="Material Resource Name" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                        
+                        <div id="materialDpDragZone" class="border border-dashed border-[#ebdcb9] p-3 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[55px] flex items-center justify-center bg-slate-50">
+                            <span class="drop-text">Drag & Drop Content Graphic Thumbnail Icon DP</span>
+                        </div>
+                        <input type="file" id="materialDpFilePicker" accept="image/*" class="hidden">
+
+                        <input type="url" id="adminContentLink" placeholder="Paste Resource Link Here (Drive, YouTube, etc.)" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+
+                        <button onclick="adminCommitContentMaterialToCloud()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Deploy Targeted Content Link</button>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-users-gear mr-1 text-[#c99d42]"></i> Workspace Authorization Matrix</h4>
+                        <div id="adminStudentManagementRosterGrid" class="space-y-3"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="h-14 bg-white border-t border-[#ebdcb9] flex justify-around items-center text-slate-400 text-xs shadow-lg relative z-10">
+                <button onclick="navigateToView('home')" id="tabNavHome" class="flex flex-col items-center gap-0.5 text-[#4a121a] font-bold"><i class="fas fa-th-large text-base"></i><span class="text-[9px] tracking-wide">VAULT</span></button>
+                <button onclick="navigateToView('chat')" id="tabNavChat" class="flex flex-col items-center gap-0.5 relative">
+                    <div id="chatUnseenBadgeCounter" class="absolute -top-1.5 -right-2 bg-red-600 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center hidden">0</div>
+                    <i class="fas fa-comments text-base"></i><span class="text-[9px] tracking-wide">CHAT DESK</span>
+                </button>
+                <button onclick="navigateToView('profile')" id="tabNavProfile" class="flex flex-col items-center gap-0.5"><i class="fas fa-user text-base"></i><span class="text-[9px] tracking-wide">PROFILE</span></button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, addDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjER9j_n6EWXgp6oMAn47Zfr3NRjbgytk",
+            authDomain: "science-world-afcad.firebaseapp.com",
+            projectId: "science-world-afcad",
+            storageBucket: "science-world-afcad.firebasestorage.app",
+            messagingSenderId: "263039859433",
+            appId: "1:263039859433:web:1df84917e18989aa080e78",
+            measurementId: "G-8QVNXHD8WG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        const ADMIN_EMAIL = "rkphysicsadmin@gmail.com";
+        let activeSessionUser = null;
+        let globalCurrentViewMode = "student";
+        let isSignUpMode = false;
+        let activeTargetBatchUserId = null; 
+        let internalCurrentActiveViewTab = "home";
+        let localChatTotalMessagesLengthCount = 0;
+        let currentStudentVerifiedClassNodeStr = "11th";
+
+        window.b64BatchImage = "";
+        window.b64FolderImage = "";
+        window.tempProfileB64 = "";
+        window.carouselUploadedImgB64 = "";
+        window.carouselUploadedVidB64 = "";
+        window.b64LaunchBannerGraphic = "";
+        window.b64MaterialThumbnailDp = "";
+        
+        window.carouselSlideIndex = 0;
+        window.carouselInterval = null;
+        window.appLaunchTimerPointerRef = null;
+
+        // Custom Push Notification Engine Logic
+        window.triggerPushPermissionLogic = function() {
+            if (activeSessionUser && activeSessionUser.email !== ADMIN_EMAIL) {
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    let isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+                    if (!isSubscribed) {
+                        document.getElementById('customPushPromptModal').classList.remove('hidden');
+                    }
+                });
+            }
+        };
+
+        window.handlePushAllow = function() {
+            document.getElementById('customPushPromptModal').classList.add('hidden');
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push(function(OneSignal) {
+                OneSignal.Display.permissionPromptDisplay();
+            });
+        };
+
+        window.handlePushSkip = function() {
+            document.getElementById('customPushPromptModal').classList.add('hidden');
+            showToastNotification("Notification setup skipped.");
+        };
+
+        setTimeout(() => {
+            const splash = document.getElementById('appSplashScreen');
+            if(splash) {
+                splash.classList.add('opacity-0');
+                setTimeout(() => {
+                    splash.remove();
+                    evaluateSystemLaunchOverlayBannerNode();
+                }, 750);
+            }
+        }, 2200);
+
+        window.showToastNotification = (message) => {
+            const toast = document.getElementById('inAppToast');
+            document.getElementById('inAppToastMsg').innerText = message;
+            toast.classList.remove('-translate-y-32');
+            setTimeout(() => { toast.classList.add('-translate-y-32'); }, 3500);
+        };
+
+        window.handleGoogleLogin = async () => {
+            try {
+                showToastNotification("Initializing Google Secure Login...");
+                const result = await signInWithPopup(auth, googleProvider);
+                
+                const userRef = doc(db, "users", result.user.uid);
+                const docSnap = await getDoc(userRef);
+                
+                if (!docSnap.exists()) {
+                    await setDoc(userRef, {
+                        uid: result.user.uid,
+                        name: result.user.displayName || "Google User",
+                        email: result.user.email,
+                        class: "11th",
+                        accountLockState: false,
+                        authorizedBatchesList: [],
+                        avatarUrl: result.user.photoURL || "",
+                        timestamp: serverTimestamp()
+                    });
+                }
+                showToastNotification("Google Account Synced Successfully!");
+            } catch (error) {
+                console.error(error);
+                showToastNotification("Google Login Failed: " + error.message);
+            }
+        };
+
+        window.toggleAuthMode = () => {
+            isSignUpMode = !isSignUpMode;
+            const nameField = document.getElementById('signupNameField');
+            const batchFieldWrapper = document.getElementById('authBatchSelectionWrapper');
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            const btn = document.getElementById('authBtn');
+            const toggleText = document.getElementById('authToggleText');
+            const toggleBtn = document.getElementById('authToggleBtn');
+
+            if (isSignUpMode) {
+                nameField.classList.remove('hidden');
+                title.innerText = "Create Workspace";
+                subtitle.innerText = "Register to setup student space portal";
+                btn.innerText = "Sign Up & Register";
+                toggleText.innerText = "Already registered?";
+                toggleBtn.innerText = "Sign In Instead";
+            } else {
+                nameField.classList.add('hidden');
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Login to unlock your premium batch space";
+                btn.innerText = "Sign In to Dashboard";
+                toggleText.innerText = "New Student?";
+                toggleBtn.innerText = "Create Workspace Account";
+            }
+        };
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const pass = document.getElementById('authPassword').value;
+            const selectedClassNode = document.getElementById('authClass').value;
+
+            if(!selectedClassNode) {
+                return showToastNotification("Please select your targeted class stream room.");
+            }
+
+            try {
+                if (isSignUpMode) {
+                    const name = document.getElementById('authName').value.trim();
+                    if(!name) return showToastNotification("Please enter full name registration details.");
+
+                    const credential = await createUserWithEmailAndPassword(auth, email, pass);
+                    await setDoc(doc(db, "users", credential.user.uid), {
+                        uid: credential.user.uid,
+                        name: name,
+                        email: email,
+                        class: selectedClassNode, 
+                        accountLockState: false,
+                        authorizedBatchesList: [],
+                        avatarUrl: "",
+                        timestamp: serverTimestamp()
+                    });
+                    showToastNotification("Account dynamic entry generated!");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+            } catch(err) {
+                showToastNotification(err.message);
+            }
+        });
+
+        function bindSystemDragDropZones() {
+            configureDragEngine('avatarDropZone', 'fileUploadInput', (res) => {
+                window.tempProfileB64 = res;
+            }, 'image');
+            configureDragEngine('batchDragZone', 'batchFilePicker', (res) => window.b64BatchImage = res, 'image');
+            configureDragEngine('folderDragZone', 'folderFilePicker', (res) => window.b64FolderImage = res, 'image');
+            configureDragEngine('carouselImgDragZone', 'carouselImgFilePicker', (res) => {
+                window.carouselUploadedImgB64 = res;
+                window.carouselUploadedVidB64 = ""; 
+            }, 'image');
+            configureDragEngine('carouselVidDragZone', 'carouselVidFilePicker', (res) => {
+                window.carouselUploadedVidB64 = res;
+                window.carouselUploadedImgB64 = ""; 
+            }, 'video');
+            configureDragEngine('launchBannerDragZone', 'launchBannerFilePicker', (res) => {
+                window.b64LaunchBannerGraphic = res;
+            }, 'image');
+            configureDragEngine('materialDpDragZone', 'materialDpFilePicker', (res) => {
+                window.b64MaterialThumbnailDp = res;
+            }, 'image');
+        }
+
+        function configureDragEngine(zoneId, inputId, callback, modeType) {
+            const el = document.getElementById(zoneId);
+            const input = document.getElementById(inputId);
+            if(!el || !input) return;
+
+            el.onclick = () => input.click();
+            input.onchange = (e) => readObject(e.target.files[0]);
+
+            ['dragenter', 'dragover'].forEach(n => el.addEventListener(n, (ev) => { ev.preventDefault(); el.classList.add('drag-over'); }));
+            ['dragleave', 'drop'].forEach(n => el.addEventListener(n, (ev) => { ev.preventDefault(); el.classList.remove('drag-over'); }));
+            el.addEventListener('drop', (ev) => { ev.preventDefault(); if(ev.dataTransfer.files.length > 0) readObject(ev.dataTransfer.files[0]); });
+
+            function readObject(file) {
+                if(!file) return;
+                
+                if(modeType === 'video' && !file.type.startsWith('video/')) {
+                    return showToastNotification("Please feed valid video format tracks.");
+                }
+                if(modeType === 'image' && !file.type.startsWith('image/')) {
+                    return showToastNotification("Please drop valid graphic image nodes.");
+                }
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => {
+                    let internalHtmlSnippetNode = "";
+                    if(file.type.startsWith('image/')) {
+                        internalHtmlSnippetNode = `<img src="${reader.result}" class="w-14 h-14 object-cover rounded-xl border-2 border-[#c99d42] shadow-sm">`;
+                    } else if(file.type.startsWith('video/')) {
+                        internalHtmlSnippetNode = `<div class="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center border-2 border-[#c99d42] text-white text-[9px] font-bold"><i class="fas fa-video"></i></div>`;
+                    } else {
+                        internalHtmlSnippetNode = `<div class="w-14 h-14 bg-[#4a121a] rounded-xl flex items-center justify-center text-[#c99d42] text-xs"><i class="fas fa-file-pdf"></i></div>`;
+                    }
+                    
+                    el.innerHTML = `
+                        <div class="flex items-center gap-3 p-1">
+                            ${internalHtmlSnippetNode}
+                            <div class="text-left"><span class="text-xs font-bold text-slate-700 block truncate max-w-[150px]">${file.name}</span><span class="text-[9px] text-emerald-600 font-semibold block">Loaded Matrix</span></div>
+                        </div>
+                    `;
+                    callback(reader.result);
+                };
+            }
+        }
+
+        window.saveUserProfileData = async () => {
+            const upName = document.getElementById('profileInputName').value.trim();
+            if(!upName) return showToastNotification("Display Name text can't be vacant.");
+            
+            const payload = { name: upName };
+            if(window.tempProfileB64) {
+                payload.avatarUrl = window.tempProfileB64;
+            }
+
+            try {
+                await updateDoc(doc(db, "users", activeSessionUser.uid), payload);
+                showToastNotification("Profile configurations saved!");
+                
+                document.getElementById('userName').innerText = upName;
+                if(payload.avatarUrl) {
+                    document.getElementById('userAvatar').src = payload.avatarUrl;
+                    document.getElementById('profilePreviewImage').src = payload.avatarUrl;
+                }
+            } catch(e) {
+                showToastNotification("Write rejection framework error.");
+            }
+        };
+
+        window.adminCommitGlobalNoticeDropdownBroadcast = async () => {
+            const val = document.getElementById('adminGlobalBroadcastMessageInput').value.trim();
+            if(!val) return showToastNotification("Please enter a notice description string.");
+            await setDoc(doc(db, "app_settings", "overall_notice"), { text: val, timestamp: serverTimestamp() });
+            showToastNotification("Overall global banner notice distributed.");
+            document.getElementById('adminGlobalBroadcastMessageInput').value = "";
+        };
+
+        function initGlobalOverallNoticeListener() {
+            onSnapshot(doc(db, "app_settings", "overall_notice"), (snap) => {
+                if(snap.exists()) {
+                    const d = snap.data();
+                    if(d.text) {
+                        document.getElementById('globalAnnounceBarTxtNode').innerText = d.text;
+                        document.getElementById('globalAdminAnnounceDropdownBar').classList.remove('-translate-y-full');
+                    }
+                }
+            });
+        }
+
+        window.adminCommitLaunchBannerAssetToCloud = async () => {
+            if(!window.b64LaunchBannerGraphic) return showToastNotification("Drop launch graphic before pushing node.");
+            await setDoc(doc(db, "app_settings", "launch_banner"), { url: window.b64LaunchBannerGraphic, timestamp: serverTimestamp() });
+            showToastNotification("Launch cover banner configured.");
+            window.b64LaunchBannerGraphic = "";
+            document.getElementById('launchBannerDragZone').innerHTML = `<span class="drop-text">Drag & Drop Launch Cover Banner Graphic Here</span>`;
+        };
+
+        async function evaluateSystemLaunchOverlayBannerNode() {
+            try {
+                const snap = await getDoc(doc(db, "app_settings", "launch_banner"));
+                if(snap.exists() && snap.data().url) {
+                    document.getElementById('launchBannerMediaContainer').innerHTML = `<img src="${snap.data().url}" class="w-full h-full object-contain">`;
+                    document.getElementById('appLaunchBannerModal').classList.remove('hidden');
+                    window.appLaunchTimerPointerRef = setTimeout(() => {
+                        closeLaunchBannerPanelManually();
+                    }, 6000);
+                }
+            } catch(e) { console.log(e); }
+        }
+
+        window.closeLaunchBannerPanelManually = () => {
+            document.getElementById('appLaunchBannerModal').classList.add('hidden');
+            if(window.appLaunchTimerPointerRef) clearTimeout(window.appLaunchTimerPointerRef);
+        };
+
+        window.adminDeployCarouselBannerNode = async () => {
+            let activePayloadString = window.carouselUploadedImgB64 || window.carouselUploadedVidB64;
+            let computedModeType = window.carouselUploadedImgB64 ? "image" : "video";
+
+            if(!activePayloadString) return showToastNotification("Please drag & drop a carousel media vector block!");
+
+            await addDoc(collection(db, "app_carousel"), { 
+                type: computedModeType, 
+                url: activePayloadString, 
+                timestamp: serverTimestamp() 
+            });
+
+            showToastNotification("Carousel slide distributed into live banner cycle!");
+            
+            window.carouselUploadedImgB64 = "";
+            window.carouselUploadedVidB64 = "";
+            document.getElementById('carouselImgDragZone').innerHTML = `<span class="drop-text">Drag & Drop Banner Graphic Image Here</span>`;
+            document.getElementById('carouselVidDragZone').innerHTML = `<span class="drop-text">Drag & Drop short Video Asset Here (&lt;=30s)</span>`;
+        };
+
+        window.triggerManualCarouselShift = (dir) => {
+            const track = document.getElementById('appMediaCarouselTrack');
+            if(!track) return;
+            const slides = track.children;
+            if(slides.length <= 1) return;
+
+            slides[window.carouselSlideIndex].classList.remove('opacity-100', 'z-10');
+            slides[window.carouselSlideIndex].classList.add('opacity-0', 'z-0');
+            
+            let targetVideo = slides[window.carouselSlideIndex].querySelector('video');
+            if(targetVideo) targetVideo.pause();
+
+            window.carouselSlideIndex = (window.carouselSlideIndex + dir + slides.length) % slides.length;
+            
+            slides[window.carouselSlideIndex].classList.remove('opacity-0', 'z-0');
+            slides[window.carouselSlideIndex].classList.add('opacity-100', 'z-10');
+
+            let nextVideo = slides[window.carouselSlideIndex].querySelector('video');
+            if(nextVideo) {
+                nextVideo.currentTime = 0;
+                nextVideo.play().catch(e => console.log(e));
+                if(window.carouselInterval) clearInterval(window.carouselInterval);
+            } else {
+                startCarousel();
+            }
+        };
+
+        function startCarousel() {
+            if(window.carouselInterval) clearInterval(window.carouselInterval);
+            window.carouselInterval = setInterval(() => {
+                const track = document.getElementById('appMediaCarouselTrack');
+                if(!track) return;
+                const slides = track.children;
+                if(slides.length <= 1) return; 
+
+                let activeSlide = slides[window.carouselSlideIndex];
+                if(activeSlide && activeSlide.querySelector('video')) {
+                    return; 
+                }
+                
+                triggerManualCarouselShift(1);
+            }, 3500);
+        }
+
+        function initGlobalCarouselBannerListener() {
+            onSnapshot(query(collection(db, "app_carousel"), orderBy("timestamp", "desc")), (snap) => {
+                let code = "";
+                let adminRemoverCode = "";
+                let index = 0;
+                
+                snap.forEach(docObj => {
+                    const item = docObj.data();
+                    const activeClass = index === 0 ? "opacity-100 z-10" : "opacity-0 z-0";
+                    
+                    if(item.type === 'image') {
+                        code += `<div class="absolute inset-0 w-full h-full transition-opacity duration-1000 ${activeClass}"><img src="${item.url}" class="w-full h-full object-cover"></div>`;
+                        adminRemoverCode += `
+                            <div class="relative rounded-lg overflow-hidden border h-16 bg-slate-100">
+                                <img src="${item.url}" class="w-full h-full object-cover">
+                                <button onclick="adminDestroyCarouselBannerNode('${docObj.id}')" class="absolute inset-0 bg-black/50 text-white flex items-center justify-center text-[10px] font-bold opacity-0 hover:opacity-100 transition-opacity"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                            </div>
+                        `;
+                    } else {
+                        code += `
+                            <div class="absolute inset-0 w-full h-full transition-opacity duration-1000 ${activeClass}">
+                                <video class="w-full h-full object-cover" autoplay loop src="${item.url}" onended="triggerManualCarouselShift(1)"></video>
+                            </div>`;
+                        adminRemoverCode += `
+                            <div class="relative rounded-lg overflow-hidden border h-16 bg-slate-900 flex items-center justify-center text-white">
+                                <i class="fas fa-video text-lg text-[#c99d42]"></i>
+                                <button onclick="adminDestroyCarouselBannerNode('${docObj.id}')" class="absolute inset-0 bg-black/60 text-white flex items-center justify-center text-[10px] font-bold opacity-0 hover:opacity-100 transition-opacity"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                            </div>
+                        `;
+                    }
+                    index++;
+                });
+
+                document.getElementById('appMediaCarouselTrack').innerHTML = code || `
+                    <div class="w-full h-full brand-header-gradient flex flex-col justify-center items-center text-white p-4 text-center absolute inset-0">
+                        <span class="text-[#c99d42] text-[10px] uppercase font-bold tracking-widest">RK PHYSICS ACADEMY</span>
+                        <p class="text-xs mt-1 text-slate-200">No active promotional carousel vectors deployed.</p>
+                    </div>
+                `;
+
+                if(document.getElementById('adminCarouselBannersRemoverGrid')) {
+                    document.getElementById('adminCarouselBannersRemoverGrid').innerHTML = adminRemoverCode || '<span class="text-[9px] text-slate-400">No vectors listed</span>';
+                }
+                
+                window.carouselSlideIndex = 0;
+                startCarousel();
+            });
+        }
+
+        window.adminDestroyCarouselBannerNode = async (id) => {
+            if(confirm("Evict this slider banner graphic permanently?")) {
+                await deleteDoc(doc(db, "app_carousel", id));
+                showToastNotification("Carousel slider deleted.");
+            }
+        };
+
+        window.adminCommitSupportDetailsToCloud = async () => {
+            const p = document.getElementById('adminSupportPhone').value.trim();
+            const e = document.getElementById('adminSupportEmail').value.trim();
+            const a = document.getElementById('adminSupportAddress').value.trim();
+            if(!p || !e || !a) return showToastNotification("All support parameters are required.");
+
+            await setDoc(doc(db, "app_settings", "support_node"), { phone: p, email: e, address: a });
+            showToastNotification("Help Desk metadata updated instantly!");
+        };
+
+        function initSupportStaticMetadataLoader() {
+            onSnapshot(doc(db, "app_settings", "support_node"), (snap) => {
+                if(snap.exists()) {
+                    const data = snap.data();
+                    document.getElementById('supportPhoneNode').innerText = data.phone || "N/A";
+                    document.getElementById('supportEmailNode').innerText = data.email || "N/A";
+                    document.getElementById('supportAddressNode').innerText = data.address || "N/A";
+                    
+                    if(document.getElementById('adminSupportPhone')) {
+                        document.getElementById('adminSupportPhone').value = data.phone || "";
+                        document.getElementById('adminSupportEmail').value = data.email || "";
+                        document.getElementById('adminSupportAddress').value = data.address || "";
+                    }
+                }
+            });
+        }
+
+        function initBroadcastChatFeedSync() {
+            const targetedCollectionNodeStr = (currentStudentVerifiedClassNodeStr === "12th") ? "app_broadcast_chat_12th" : "app_broadcast_chat_11th";
+            document.getElementById('chatRoomLiveClassNodeBadge').innerText = `Class ${currentStudentVerifiedClassNodeStr}`;
+
+            onSnapshot(query(collection(db, targetedCollectionNodeStr), orderBy("timestamp", "asc")), (snap) => {
+                let code = "";
+                let domesticMessagesCounterTrackSize = 0;
+                
+                snap.forEach(d => {
+                    const msg = d.data();
+                    const isMyMessage = msg.uid === activeSessionUser.uid;
+                    const isAdmin = msg.email === ADMIN_EMAIL;
+                    const fallbackAvatarSrc = msg.senderAvatarUrl || "https://www.w3schools.com/howto/img_avatar.png";
+                    domesticMessagesCounterTrackSize++;
+
+                    code += `
+                        <div class="flex gap-2 w-full ${isMyMessage ? 'flex-row-reverse items-end' : 'items-start'}">
+                            <img src="${fallbackAvatarSrc}" class="w-7 h-7 rounded-full object-cover border shadow-sm mt-1 bg-white flex-shrink-0">
+                            
+                            <div class="flex flex-col max-w-[75%] ${isMyMessage ? 'items-end' : 'items-start'}">
+                                <span class="text-[9px] text-slate-400 font-bold px-1 mb-0.5">${msg.senderName} ${isAdmin ? '• [Admin Master]' : ''}</span>
+                                <div class="p-2.5 text-xs shadow-sm font-normal leading-relaxed break-words rounded-2xl
+                                    ${isMyMessage ? 'bg-[#4a121a] text-white rounded-tr-none' : 'bg-slate-200/90 text-slate-800 rounded-tl-none'}">
+                                    ${msg.text}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const feed = document.getElementById('chatMessageFeed');
+                feed.innerHTML = code || '<p class="text-[11px] text-center text-slate-400 py-10 my-auto">No doubts stream listed yet.</p>';
+                feed.scrollTop = feed.scrollHeight;
+
+                if(internalCurrentActiveViewTab !== 'chat') {
+                    let computingUnseenDeltaCount = domesticMessagesCounterTrackSize - localChatTotalMessagesLengthCount;
+                    if(computingUnseenDeltaCount > 0) {
+                        const badge = document.getElementById('chatUnseenBadgeCounter');
+                        const dot = document.getElementById('notificationDot');
+                        badge.innerText = computingUnseenDeltaCount;
+                        badge.classList.remove('hidden');
+                        if(dot) dot.classList.remove('hidden');
+                    }
+                } else {
+                    localChatTotalMessagesLengthCount = domesticMessagesCounterTrackSize;
+                }
+            });
+        }
+
+        document.getElementById('chatSubmissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const box = document.getElementById('chatInputMsg');
+            const txt = box.value.trim();
+            if(!txt) return;
+
+            const currentUserAvatarNodeSrc = document.getElementById('userAvatar').src;
+            const targetedCollectionNodeStr = (currentStudentVerifiedClassNodeStr === "12th") ? "app_broadcast_chat_12th" : "app_broadcast_chat_11th";
+
+            await addDoc(collection(db, targetedCollectionNodeStr), {
+                uid: activeSessionUser.uid,
+                senderName: document.getElementById('userName').innerText,
+                senderAvatarUrl: currentUserAvatarNodeSrc,
+                email: activeSessionUser.email,
+                text: txt,
+                timestamp: serverTimestamp()
+            });
+            box.value = "";
+        });
+
+        window.openNotifications = async () => {
+            const modal = document.getElementById('notificationModal');
+            const modalContent = document.getElementById('notificationModalContent');
+            const list = document.getElementById('notificationList');
+            const dot = document.getElementById('notificationDot');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => { modalContent.classList.remove('translate-y-full'); }, 50);
+            if(dot) dot.classList.add('hidden'); 
+
+            try {
+                const targetedCollectionNodeStr = (currentStudentVerifiedClassNodeStr === "12th") ? "app_broadcast_chat_12th" : "app_broadcast_chat_11th";
+                const qSnap = await getDocs(query(collection(db, targetedCollectionNodeStr), orderBy("timestamp", "desc")));
+                let html = "";
+                qSnap.forEach(d => {
+                    const msg = d.data();
+                    let dateStr = "Just now";
+                    if(msg.timestamp) {
+                        dateStr = new Date(msg.timestamp.toDate()).toLocaleString('en-IN', { hour: '2-digit', minute:'2-digit', day: 'numeric', month: 'short' });
+                    }
+                    
+                    html += `
+                        <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex gap-3 items-start">
+                            <img src="${msg.senderAvatarUrl || 'https://www.w3schools.com/howto/img_avatar.png'}" class="w-8 h-8 rounded-full object-cover border border-[#c99d42]">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h5 class="text-[11px] font-bold text-slate-800">${msg.senderName}</h5>
+                                    <span class="text-[8px] text-slate-400">${dateStr}</span>
+                                </div>
+                                <p class="text-[10px] text-slate-600 leading-relaxed">${msg.text}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html || "<div class='text-center py-10'><i class='fas fa-bell-slash text-2xl text-slate-300 mb-2'></i><p class='text-xs text-slate-400'>No recent notifications</p></div>";
+            } catch(e) {
+                list.innerHTML = "<p class='text-center text-xs text-red-400'>Failed to load notifications matrix.</p>";
+            }
+        };
+
+        window.closeNotifications = () => {
+            const modal = document.getElementById('notificationModal');
+            const modalContent = document.getElementById('notificationModalContent');
+            modalContent.classList.add('translate-y-full');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        };
+
+        window.studentSubmitSupportQueryTicket = async () => {
+            const inputField = document.getElementById('studentSupportQueryInput');
+            const queryString = inputField.value.trim();
+            if(!queryString) return showToastNotification("Please fill text context space.");
+
+            await addDoc(collection(db, "support_queries"), {
+                uid: activeSessionUser.uid,
+                studentName: document.getElementById('userName').innerText,
+                studentEmail: activeSessionUser.email,
+                queryText: queryString,
+                adminReplyText: "",
+                readByStudent: false,
+                timestamp: serverTimestamp()
+            });
+
+            showToastNotification("Ticket uploaded successfully to admin registry!");
+            inputField.value = "";
+        };
+
+        function initStudentPersonalTicketsRosterListener() {
+            if(!activeSessionUser) return;
+            onSnapshot(query(collection(db, "support_queries"), where("uid", "==", activeSessionUser.uid), orderBy("timestamp", "desc")), (snap) => {
+                let code = "";
+                let containsUnreadAdminRepliesStateNode = false;
+
+                snap.forEach(docObj => {
+                    const ticket = docObj.data();
+                    if(ticket.adminReplyText && !ticket.readByStudent) {
+                        containsUnreadAdminRepliesStateNode = true;
+                    }
+
+                    code += `
+                        <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px] space-y-1">
+                            <p class="text-slate-800 font-medium"><i class="fas fa-question-circle text-[#4a121a] mr-1"></i> Q: ${ticket.queryText}</p>
+                            ${ticket.adminReplyText ? `
+                                <div class="p-2 bg-emerald-50 rounded-lg text-emerald-900 border border-emerald-100 mt-1">
+                                    <span class="font-bold block text-[9px] text-emerald-800 uppercase tracking-widest">Admin Reply:</span>
+                                    <p class="text-xs font-medium mt-0.5">${ticket.adminReplyText}</p>
+                                </div>
+                            ` : `<p class="text-[9px] text-amber-600 font-bold italic"><i class="fas fa-hourglass-half mr-1"></i> Awaiting RK Physics resolution review...</p>`}
+                        </div>
+                    `;
+                });
+
+                document.getElementById('studentPersonalTicketsRoster').innerHTML = code || '<p class="text-[10px] text-slate-400 py-2">No tickets raised.</p>';
+                
+                const dot = document.getElementById('supportRedDotNotificationBadge');
+                if(containsUnreadAdminRepliesStateNode) {
+                    dot.classList.remove('hidden');
+                } else {
+                    dot.classList.add('hidden');
+                }
+            });
+        }
+
+        function initAdminDedicatedSupportQueriesRosterListener() {
+            onSnapshot(query(collection(db, "support_queries"), orderBy("timestamp", "desc")), (snap) => {
+                let code = "";
+                snap.forEach(docObj => {
+                    const t = docObj.data();
+                    code += `
+                        <div class="p-3 bg-slate-50 border rounded-xl space-y-2 text-xs">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-bold">
+                                <span>FROM: ${t.studentName} (${t.studentEmail})</span>
+                                <button onclick="adminDeleteSupportTicket('${docObj.id}')" class="text-red-600 hover:underline"><i class="fas fa-trash-alt"></i> Wipe</button>
+                            </div>
+                            <p class="text-slate-800 font-medium bg-white p-2 rounded-lg border">Q: ${t.queryText}</p>
+                            
+                            <div class="flex gap-1.5 mt-2">
+                                <input type="text" id="adminReplyInputBox_${docObj.id}" placeholder="Type reply payload here..." value="${t.adminReplyText || ''}" class="flex-1 text-xs border p-1.5 rounded-xl bg-white focus:outline-none">
+                                <button onclick="adminCommitSupportReplyTicket('${docObj.id}')" class="bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] tracking-wide">Reply</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('adminDedicatedSupportQueriesRoster').innerHTML = code || '<p class="text-xs text-slate-400 py-4 text-center">No active student issues pending.</p>';
+            });
+        }
+
+        window.adminCommitSupportReplyTicket = async (id) => {
+            const txt = document.getElementById(`adminReplyInputBox_${id}`).value.trim();
+            if(!txt) return showToastNotification("Reply payload string cannot be blank.");
+
+            await updateDoc(doc(db, "support_queries", id), {
+                adminReplyText: txt,
+                readByStudent: false
+            });
+            showToastNotification("Reply broadcasted securely to student panel.");
+        };
+
+        window.adminDeleteSupportTicket = async (id) => {
+            if(confirm("Purge this ticket matrix?")) {
+                await deleteDoc(doc(db, "support_queries", id));
+                showToastNotification("Ticket document erased.");
+            }
+        };
+
+        async function markAllStudentTicketsAsRead() {
+            if(!activeSessionUser || activeSessionUser.email === ADMIN_EMAIL) return;
+            const qSnap = await getDocs(query(collection(db, "support_queries"), where("uid", "==", activeSessionUser.uid)));
+            qSnap.forEach(async (d) => {
+                if(d.data().adminReplyText && !d.data().readByStudent) {
+                    await updateDoc(doc(db, "support_queries", d.id), { readByStudent: true });
+                }
+            });
+        }
+
+        async function syncAdminDropdownMenus() {
+            if(activeSessionUser.email !== ADMIN_EMAIL) return;
+            const bSnap = await getDocs(collection(db, "app_batches"));
+            let options = '<option value="">-- Choose Target Parent Batch Container --</option>';
+            let cOptions = '<option value="">-- Choose Target Batch Matrix --</option>';
+            bSnap.forEach(d => {
+                options += `<option value="${d.id}">${d.data().title}</option>`;
+                cOptions += `<option value="${d.id}">${d.data().title}</option>`;
+            });
+            document.getElementById('adminFolderParentSelect').innerHTML = options;
+            document.getElementById('adminContentBatchSelect').innerHTML = cOptions;
+        }
+
+        window.syncAdminFolderOptionsDropdown = async () => {
+            const activeBatch = document.getElementById('adminContentBatchSelect').value;
+            if(!activeBatch) return;
+            const fSnap = await getDocs(query(collection(db, "app_folders"), where("parentBatchId", "==", activeBatch)));
+            let opt = '<option value="">-- Choose Target Folder Container --</option>';
+            fSnap.forEach(d => {
+                opt += `<option value="${d.id}">${d.data().title}</option>`;
+            });
+            document.getElementById('adminContentFolderSelect').innerHTML = opt;
+        };
+
+        window.syncAdminSubFolderOptionsDropdown = async () => {
+            const activeBatch = document.getElementById('adminFolderParentSelect').value;
+            if(!activeBatch) return;
+            const fSnap = await getDocs(query(collection(db, "app_folders"), where("parentBatchId", "==", activeBatch)));
+            let opt = '<option value="">-- Main Root Folder (Leave empty if not a sub-folder) --</option>';
+            fSnap.forEach(d => {
+                opt += `<option value="${d.id}">${d.data().title}</option>`;
+            });
+            document.getElementById('adminSubFolderParentSelect').innerHTML = opt;
+        };
+
+        window.adminCommitBatchObjectToCloud = async () => {
+            const t = document.getElementById('adminNewBatchTitle').value.trim();
+            const acc = document.getElementById('adminNewBatchAccess').value;
+            if(!t || !window.b64BatchImage) return showToastNotification("Provide title and setup Cover graphic!");
+
+            await addDoc(collection(db, "app_batches"), { title: t, access: acc, dp: window.b64BatchImage, timestamp: serverTimestamp() });
+            showToastNotification("New classroom structure deployed!");
+            document.getElementById('adminNewBatchTitle').value = "";
+            window.b64BatchImage = "";
+            document.getElementById('batchDragZone').innerHTML = `<span class="drop-text">Click / Drop Batch DP Cover Image Here</span>`;
+            syncHomeDirectoryMatrixDisplay();
+            syncAdminDropdownMenus();
+        };
+
+        window.adminCommitFolderObjectToCloud = async () => {
+            const parentBatch = document.getElementById('adminFolderParentSelect').value;
+            const parentFolder = document.getElementById('adminSubFolderParentSelect').value;
+            const title = document.getElementById('adminNewFolderTitle').value.trim();
+            if(!parentBatch || !title || !window.b64FolderImage) return showToastNotification("Batch, title and DP are required!");
+
+            await addDoc(collection(db, "app_folders"), { 
+                parentBatchId: parentBatch, 
+                parentFolderId: parentFolder || "", 
+                title: title, 
+                dp: window.b64FolderImage, 
+                timestamp: serverTimestamp() 
+            });
+            showToastNotification("Folder Node Injected into Structural Grid.");
+            document.getElementById('adminNewFolderTitle').value = "";
+            window.b64FolderImage = "";
+            document.getElementById('folderDragZone').innerHTML = `<span class="drop-text">Click / Drop Folder DP Image Here</span>`;
+            syncAdminSubFolderOptionsDropdown();
+        };
+
+        window.adminCommitContentMaterialToCloud = async () => {
+            const batchId = document.getElementById('adminContentBatchSelect').value;
+            const folderId = document.getElementById('adminContentFolderSelect').value;
+            const title = document.getElementById('adminContentTitle').value.trim();
+            const link = document.getElementById('adminContentLink').value.trim();
+            
+            if(!batchId || !folderId || !title || !window.b64MaterialThumbnailDp || !link) {
+                return showToastNotification("Please select folder, title, thumbnail DP and provide a URL Link!");
+            }
+
+            await addDoc(collection(db, "app_contents"), { 
+                batchId: batchId, 
+                folderId: folderId, 
+                title: title, 
+                dp: window.b64MaterialThumbnailDp,
+                link: link,
+                timestamp: serverTimestamp() 
+            });
+            showToastNotification("Content payload delivered underneath target folder container.");
+            document.getElementById('adminContentTitle').value = "";
+            document.getElementById('adminContentLink').value = "";
+            window.b64MaterialThumbnailDp = "";
+            document.getElementById('materialDpDragZone').innerHTML = `<span class="drop-text">Drag & Drop Content Graphic Thumbnail Icon DP</span>`;
+        };
+
+        async function syncHomeDirectoryMatrixDisplay() {
+            const bSnap = await getDocs(query(collection(db, "app_batches"), orderBy("timestamp", "desc")));
+            let code = "";
+            
+            bSnap.forEach(docObj => {
+                const node = docObj.data();
+                const isUserAuthorized = (activeSessionUser.email === ADMIN_EMAIL) || 
+                                         (node.access === 'public') || 
+                                         (window.currentUserAuthBatches && window.currentUserAuthBatches.includes(docObj.id));
+
+                code += `
+                    <div class="gold-border-card bg-white overflow-hidden shadow-sm relative">
+                        <div class="relative h-36 bg-slate-100">
+                            <img src="${node.dp || 'https://via.placeholder.com/400x150'}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 right-2 bg-red-800 text-white font-bold text-[8px] tracking-wider px-2 py-0.5 rounded uppercase">
+                                ${node.access === 'public' ? 'OPEN TRACK' : 'LOCKED TRACK'}
+                            </span>
+                        </div>
+                        <div class="p-3 space-y-2">
+                            <h4 class="text-xs font-bold text-slate-800 tracking-wide">${node.title}</h4>
+                            ${isUserAuthorized ? `
+                                <button onclick="openSeparateFoldersPage('${docObj.id}', '${node.title.replace(/'/g, "\\'")}')" class="w-full bg-[#4a121a] text-white font-bold text-[11px] py-2 rounded-xl uppercase tracking-wider">Enter Batch Space</button>
+                            ` : `
+                                <button class="w-full bg-[#ebdcb9] text-slate-600 font-bold text-[11px] py-2 rounded-xl uppercase tracking-wider cursor-not-allowed">Batch Space Locked</button>
+                            `}
+                        </div>
+                        ${globalCurrentViewMode === 'admin' ? `
+                            <button onclick="adminTrashBatchNode('${docObj.id}')" class="absolute bottom-3 right-3 text-red-600 bg-red-50 text-[9px] font-bold px-2 py-1 rounded border border-red-200">Drop</button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            document.getElementById('coursesCatalogGrid').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-6">No premium classrooms available.</p>';
+        }
+
+        window.openSeparateFoldersPage = async (batchId, batchTitle) => {
+            document.getElementById('currentBatchTitleHeader').innerText = batchTitle;
+            document.getElementById('studentHomeView').classList.add('hidden');
+            document.getElementById('folderContentsView').classList.add('hidden');
+            document.getElementById('batchFoldersView').classList.remove('hidden');
+
+            const fSnap = await getDocs(query(collection(db, "app_folders"), where("parentBatchId", "==", batchId)));
+            let code = "";
+            fSnap.forEach(fDoc => {
+                const folder = fDoc.data();
+                
+                if (!folder.parentFolderId || folder.parentFolderId === "") {
+                    code += `
+                        <div onclick="openSeparateContentsPage('${fDoc.id}', '${folder.title.replace(/'/g, "\\'")}', '${batchId}')" class="gold-border-card bg-white p-3 flex items-center gap-3 shadow-sm hover:border-[#4a121a] transition-all cursor-pointer">
+                            <img src="${folder.dp || 'https://via.placeholder.com/150'}" class="w-12 h-12 object-cover rounded-xl border">
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-slate-800">${folder.title}</h4>
+                                <p class="text-[9px] text-slate-400 mt-0.5">Click to view nested folders & contents</p>
+                            </div>
+                            <div class="text-[#4a121a] text-xs px-2"><i class="fas fa-chevron-right"></i></div>
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById('foldersCatalogGrid').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-10">No folder containers mapped to this structural node.</p>';
+        };
+
+        window.navigateBackToBatches = () => {
+            document.getElementById('batchFoldersView').classList.add('hidden');
+            document.getElementById('studentHomeView').classList.remove('hidden');
+        };
+
+        window.openSeparateContentsPage = async (folderId, folderTitle, batchId) => {
+            document.getElementById('currentFolderTitleHeader').innerText = folderTitle;
+            document.getElementById('batchFoldersView').classList.add('hidden');
+            document.getElementById('folderContentsView').classList.remove('hidden');
+
+            let code = "";
+
+            const subFSnap = await getDocs(query(collection(db, "app_folders"), where("parentFolderId", "==", folderId)));
+            subFSnap.forEach(fDoc => {
+                const folder = fDoc.data();
+                code += `
+                    <div onclick="openSeparateContentsPage('${fDoc.id}', '${folder.title.replace(/'/g, "\\'")}', '${batchId}')" class="p-3 bg-amber-50 border border-[#ebdcb9] rounded-xl flex items-center gap-3 shadow-sm hover:border-[#4a121a] transition-all cursor-pointer">
+                        <img src="${folder.dp || 'https://via.placeholder.com/150'}" class="w-10 h-10 object-cover rounded-xl border">
+                        <div class="flex-1">
+                            <h5 class="text-xs font-bold text-slate-800">${folder.title} <span class="text-[9px] bg-[#c99d42] text-white px-1.5 py-0.5 rounded ml-1">Sub-folder</span></h5>
+                        </div>
+                        <div class="text-[#4a121a] text-xs px-2"><i class="fas fa-folder-open"></i></div>
+                    </div>
+                `;
+            });
+
+            const cSnap = await getDocs(query(collection(db, "app_contents"), where("folderId", "==", folderId)));
+            cSnap.forEach(cDoc => {
+                const content = cDoc.data();
+                code += `
+                    <div class="p-3 bg-white border border-[#ebdcb9] rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-2.5">
+                            <img src="${content.dp || 'https://via.placeholder.com/50'}" class="w-9 h-9 object-cover rounded-full border">
+                            <div>
+                                <h5 class="text-xs font-semibold text-slate-800">${content.title}</h5>
+                                <span class="text-[9px] text-slate-400 font-medium block">Click to open link</span>
+                            </div>
+                        </div>
+                        <a href="${content.link || '#'}" target="_blank" onclick="showToastNotification('Redirecting to resource...')" class="bg-[#4a121a] hover:bg-[#c99d42] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center justify-center transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('contentsCatalogGrid').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-10">No items available within this node context room layout.</p>';
+        };
+
+        window.navigateBackToFolders = () => {
+            document.getElementById('folderContentsView').classList.add('hidden');
+            document.getElementById('batchFoldersView').classList.remove('hidden');
+        };
+
+        function initStudentPrivilegeRosterPipelineListener() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                let code = "";
+                snap.forEach(userDoc => {
+                    const u = userDoc.data();
+                    if(u.email !== ADMIN_EMAIL) {
+                        const isBlocked = u.accountLockState === true;
+                        code += `
+                            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-slate-800">${u.name} (Class ${u.class || '11th'})</span>
+                                    <span class="text-[8px] px-2 py-0.5 font-bold rounded ${isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${isBlocked ? 'Blocked' : 'Active'}</span>
+                                </div>
+                                <div class="flex gap-1.5 text-[9px] font-bold">
+                                    <button onclick="adminToggleUserBlockState('${userDoc.id}', ${isBlocked})" class="flex-1 py-1 rounded border transition-all ${isBlocked ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}">
+                                        ${isBlocked ? 'Activate User' : 'Suspend User'}
+                                    </button>
+                                    <button onclick="openAdminBatchAccessSuiteModal('${userDoc.id}')" class="bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded">Manage Batches</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                document.getElementById('adminStudentManagementRosterGrid').innerHTML = code || '<p class="text-xs text-slate-400 py-2">No student accounts recorded.</p>';
+            });
+        }
+
+        window.adminToggleUserBlockState = async (uid, blockState) => {
+            await updateDoc(doc(db, "users", uid), { accountLockState: !blockState });
+            showToastNotification("Access parameter altered.");
+        };
+
+        window.openAdminBatchAccessSuiteModal = async (uid) => {
+            activeTargetBatchUserId = uid;
+            const userSnap = await getDoc(doc(db, "users", uid));
+            const authorizedList = userSnap.data().authorizedBatchesList || [];
+
+            const batchSnap = await getDocs(collection(db, "app_batches"));
+            let code = "";
+            batchSnap.forEach(bDoc => {
+                const bData = bDoc.data();
+                const isChecked = authorizedList.includes(bDoc.id);
+                code += `
+                    <label class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all">
+                        <div class="flex items-center gap-2">
+                            <img src="${bData.dp}" class="w-6 h-6 rounded object-cover border">
+                            <span class="text-xs font-medium text-slate-700 truncate max-w-[180px]">${bData.title}</span>
+                        </div>
+                        <input type="checkbox" value="${bDoc.id}" ${isChecked ? 'checked' : ''} onchange="toggleIndividualBatchStateAssignment(this)" class="w-4 h-4 accent-[#4a121a]">
+                    </label>
+                `;
+            });
+            document.getElementById('adminLiveBatchChecklistContainer').innerHTML = code || '<p class="text-[11px] text-slate-400 text-center py-4">Create batches first to allow matrix allocation.</p>';
+            document.getElementById('adminBatchAccessSuiteModal').classList.remove('hidden');
+        };
+
+        window.toggleIndividualBatchStateAssignment = async (checkboxElement) => {
+            if(!activeTargetBatchUserId) return;
+            const bId = checkboxElement.value;
+            const ref = doc(db, "users", activeTargetBatchUserId);
+            const snap = await getDoc(ref);
+            let activeList = snap.data().authorizedBatchesList || [];
+
+            if(checkboxElement.checked) {
+                if(!activeList.includes(bId)) activeList.push(bId);
+            } else {
+                activeList = activeList.filter(id => id !== bId);
+            }
+            await updateDoc(ref, { authorizedBatchesList: activeList });
+        };
+
+        window.closeAdminBatchAccessSuiteModal = () => {
+            document.getElementById('adminBatchAccessSuiteModal').classList.add('hidden');
+            activeTargetBatchUserId = null;
+            showToastNotification("Authorized spaces customized successfully.");
+        };
+
+        window.adminTrashBatchNode = async (id) => {
+            if(confirm("Wipe this batch layout?")) {
+                await deleteDoc(doc(db, "app_batches", id));
+                showToastNotification("Batch deleted.");
+                syncHomeDirectoryMatrixDisplay();
+                syncAdminDropdownMenus();
+            }
+        };
+
+        window.logoutSession = () => signOut(auth);
+
+        onAuthStateChanged(auth, async (session) => {
+            if(session) {
+                activeSessionUser = session;
+                document.getElementById('authModule').classList.add('hidden');
+                document.getElementById('appCore').classList.remove('hidden');
+
+                const uSnap = await getDoc(doc(db, "users", session.uid));
+                if(uSnap.exists()) {
+                    const data = uSnap.data();
+                    if(data.accountLockState === true) {
+                        showToastNotification("Your account profile workspace is administrative locked.");
+                        logoutSession();
+                        return;
+                    }
+                    currentStudentVerifiedClassNodeStr = data.class || "11th";
+                    window.currentUserAuthBatches = data.authorizedBatchesList || [];
+                    document.getElementById('userName').innerText = data.name || "Student";
+                    document.getElementById('userClassBadge').innerText = `Class ${currentStudentVerifiedClassNodeStr} Matrix`;
+                    document.getElementById('profileInputName').value = data.name || "";
+                    if(data.avatarUrl) {
+                        document.getElementById('userAvatar').src = data.avatarUrl;
+                        document.getElementById('profilePreviewImage').src = data.avatarUrl;
+                    }
+                }
+
+                if(session.email === ADMIN_EMAIL) {
+                    document.getElementById('adminToggleViewBtn').classList.remove('hidden');
+                    globalCurrentViewMode = "admin";
+                    document.getElementById('adminToggleViewBtn').innerText = "STUDENT PORTAL";
+                }
+
+                bindSystemDragDropZones();
+                syncHomeDirectoryMatrixDisplay();
+                syncAdminDropdownMenus();
+                initStudentPrivilegeRosterPipelineListener();
+                initGlobalCarouselBannerListener();
+                initSupportStaticMetadataLoader();
+                initBroadcastChatFeedSync();
+                initGlobalOverallNoticeListener();
+                
+                initStudentPersonalTicketsRosterListener();
+                if(session.email === ADMIN_EMAIL) {
+                    initAdminDedicatedSupportQueriesRosterListener();
+                }
+                
+                navigateToView('home');
+
+                setTimeout(() => {
+                    window.triggerPushPermissionLogic();
+                }, 1500);
+
+            } else {
+                document.getElementById('authModule').classList.remove('hidden');
+                document.getElementById('appCore').classList.add('hidden');
+            }
+        });
+
+        window.navigateToView = (view) => {
+            internalCurrentActiveViewTab = view;
+            ['studentHomeView', 'batchFoldersView', 'folderContentsView', 'chatRoomView', 'adminControlView', 'profileManagementView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['tabNavHome', 'tabNavChat', 'tabNavProfile'].forEach(id => document.getElementById(id).classList.remove('text-[#4a121a]', 'font-bold'));
+
+            if(view === 'home') {
+                document.getElementById('tabNavHome').classList.add('text-[#4a121a]', 'font-bold');
+                if(globalCurrentViewMode === 'admin') document.getElementById('adminControlView').classList.remove('hidden');
+                else document.getElementById('studentHomeView').classList.remove('hidden');
+            } else if(view === 'chat') {
+                document.getElementById('tabNavChat').classList.add('text-[#4a121a]', 'font-bold');
+                document.getElementById('chatRoomView').classList.remove('hidden');
+                
+                const badge = document.getElementById('chatUnseenBadgeCounter');
+                badge.innerText = "0";
+                badge.classList.add('hidden');
+                
+                setTimeout(() => {
+                    const feed = document.getElementById('chatMessageFeed');
+                    if(feed) {
+                        feed.scrollTop = feed.scrollHeight;
+                        localChatTotalMessagesLengthCount = feed.children.length;
+                    }
+                }, 100);
+            } else if(view === 'profile') {
+                document.getElementById('tabNavProfile').classList.add('text-[#4a121a]', 'font-bold');
+                document.getElementById('profileManagementView').classList.remove('hidden');
+                markAllStudentTicketsAsRead();
+            }
+        };
+
+        window.toggleAdminViewMode = () => {
+            globalCurrentViewMode = (globalCurrentViewMode === 'student') ? 'admin' : 'student';
+            document.getElementById('adminToggleViewBtn').innerText = globalCurrentViewMode === 'admin' ? "STUDENT PORTAL" : "ADMIN MODULE";
+            navigateToView('home');
+        };
+    </script>
+</body>
+</html>
