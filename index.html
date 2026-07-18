@@ -93,28 +93,63 @@
             height: 115%;
             object-fit: cover;
         }
+
+        /* --- SIDEBAR (LOGOUT) --- */
+        .app-sidebar-panel {
+            width: 78%;
+            max-width: 280px;
+        }
+
+        /* --- REUSABLE BRAND LOADER: LOGO ON TOP + TYPING EFFECT TEXT BELOW --- */
+        .brand-loader-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 28px 10px;
+            width: 100%;
+        }
+        .brand-loader-logo-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--brand-gold);
+            box-shadow: 0 0 16px rgba(201, 157, 66, 0.35);
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: brandLoaderPulse 1.5s ease-in-out infinite;
+        }
+        .brand-loader-logo-wrap img {
+            width: 115%;
+            height: 115%;
+            object-fit: cover;
+        }
+        @keyframes brandLoaderPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .brand-loader-typing-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--brand-maroon);
+            min-height: 14px;
+            border-right: 2px solid var(--brand-gold);
+            padding-right: 3px;
+            white-space: nowrap;
+        }
+        .brand-loader-typing-text.brand-loader-sm {
+            font-size: 9px;
+        }
     </style>
 </head>
 <body class="flex justify-center items-center">
 
     <div class="app-shell overflow-hidden text-slate-800">
         
-        <div id="customPushPromptModal" class="absolute inset-0 bg-black/80 z-[290] hidden flex flex-col justify-center items-center p-4 backdrop-blur-sm">
-            <div class="gold-border-card p-6 w-full max-w-sm text-center space-y-4 bg-white animate-fade-in">
-                <div class="w-16 h-16 bg-[#4a121a]/10 rounded-full flex items-center justify-center mx-auto border border-[#c99d42]">
-                    <i class="fas fa-bell text-2xl text-[#c99d42] animate-bounce"></i>
-                </div>
-                <div>
-                    <h4 class="text-base font-bold text-[#4a121a]">Notification Permissions</h4>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Important class updates, batch dynamic schedules aur notes alerts paane ke liye notifications allow karein.</p>
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button onclick="handlePushSkip()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition-all">Later (Skip)</button>
-                    <button onclick="handlePushAllow()" class="flex-1 bg-[#4a121a] hover:bg-[#340c12] text-white py-2.5 rounded-xl text-xs font-bold shadow-md tracking-wide transition-all">Allow Now</button>
-                </div>
-            </div>
-        </div>
-
         <div id="appSplashScreen" class="absolute inset-0 bg-[#4a121a] z-[300] flex flex-col justify-center items-center transition-opacity duration-700 pointer-events-none">
             <div class="text-center space-y-3 animate-zoom-in">
                 <div class="splash-logo-container">
@@ -122,6 +157,39 @@
                 </div>
                 <h1 class="text-2xl font-bold tracking-widest text-white mt-4">SCIENCE <span class="text-[#c99d42]">WORLD</span></h1>
                 <p class="text-[10px] tracking-widest text-[#ebdcb9] font-light">BY RK PHYSICS MATRIX</p>
+                <p id="splashTypingLine" class="brand-loader-typing-text brand-loader-sm !text-[#ebdcb9] !border-[#c99d42] mx-auto mt-1"></p>
+            </div>
+        </div>
+
+        <div id="appSidebarOverlay" onclick="closeAppSidebar()" class="absolute inset-0 bg-black/60 z-[275] hidden transition-opacity duration-300 opacity-0"></div>
+        <div id="appSidebarPanel" class="app-sidebar-panel absolute top-0 left-0 h-full bg-white z-[276] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="brand-header-gradient p-4 flex justify-between items-center">
+                <div>
+                    <h4 class="text-sm font-bold tracking-widest text-white leading-none">SCIENCE <span class="text-[#c99d42]">WORLD</span></h4>
+                    <span class="text-[8px] tracking-widest block text-[#ebdcb9] font-light mt-1">BY RK PHYSICS MATRIX</span>
+                </div>
+                <button onclick="closeAppSidebar()" class="text-white bg-white/10 w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 flex items-center gap-3 border-b border-[#ebdcb9]">
+                <img id="sidebarUserAvatar" src="https://www.w3schools.com/howto/img_avatar.png" class="w-11 h-11 rounded-full object-cover border-2 border-[#c99d42] bg-white">
+                <div class="flex-1 min-w-0">
+                    <h5 id="sidebarUserName" class="text-xs font-bold text-slate-800 truncate">Student</h5>
+                    <span id="sidebarUserClass" class="text-[9px] text-slate-500 block">Matrix Space</span>
+                </div>
+            </div>
+            <div class="flex-1 p-4 space-y-2 overflow-y-auto custom-scroll">
+                <button onclick="navigateToView('home'); closeAppSidebar();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50"><i class="fas fa-th-large w-4 text-[#c99d42]"></i> Home</button>
+                <button onclick="navigateToView('batches'); closeAppSidebar();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50"><i class="fas fa-layer-group w-4 text-[#c99d42]"></i> Batches</button>
+                <button onclick="navigateToView('home'); closeAppSidebar(); openMyDocsSection();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50"><i class="fas fa-bullseye w-4 text-[#c99d42]"></i> MyDocs</button>
+                <button onclick="navigateToView('chat'); closeAppSidebar();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50"><i class="fas fa-comments w-4 text-[#c99d42]"></i> Chat Desk</button>
+                <button onclick="navigateToView('profile'); closeAppSidebar();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50"><i class="fas fa-user w-4 text-[#c99d42]"></i> Profile</button>
+                <button id="adminToggleViewBtn" class="hidden w-full flex items-center gap-2.5 text-[#4a121a] text-xs font-bold py-2.5 px-2 rounded-xl bg-amber-50 border border-[#c99d42]/40" onclick="toggleAdminViewMode(); closeAppSidebar();"><i class="fas fa-user-shield w-4 text-[#c99d42]"></i> ADMIN MODULE</button>
+                <div id="sidebarSectionsList" class="pt-2 mt-2 border-t border-[#ebdcb9] space-y-1"></div>
+            </div>
+            <div class="p-4 border-t border-[#ebdcb9]">
+                <button onclick="logoutSession()" class="w-full flex items-center justify-center gap-2 bg-[#4a121a] hover:bg-[#340c12] text-white font-bold text-xs py-2.5 rounded-xl shadow-md tracking-wide">
+                    <i class="fas fa-power-off"></i> Logout
+                </button>
             </div>
         </div>
 
@@ -152,9 +220,7 @@
                     <h4 class="font-bold text-[#4a121a] text-sm"><i class="fas fa-bell text-[#c99d42] mr-2"></i>Notifications Hub</h4>
                     <button onclick="closeNotifications()" class="text-slate-400 bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-300"><i class="fas fa-times"></i></button>
                 </div>
-                <div id="notificationList" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 bg-white">
-                    <div class="text-center py-10 text-slate-400 text-xs animate-pulse">Loading updates...</div>
-                </div>
+                <div id="notificationList" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 bg-white"></div>
             </div>
         </div>
 
@@ -171,102 +237,104 @@
             </div>
         </div>
 
-        <div id="authModule" class="flex-1 flex flex-col justify-between overflow-y-auto custom-scroll bg-[#fffdf9]">
-            <div class="brand-header-gradient p-4 flex justify-between items-center shadow-md">
-                <div>
-                    <h1 class="text-base font-bold tracking-wide text-white">SCIENCE <span class="text-[#c99d42]">WORLD</span></h1>
-                    <span class="text-[9px] tracking-widest block text-slate-300 font-light">BY RK PHYSICS</span>
-                </div>
-                <div class="flex gap-4 text-white text-sm">
-                    <i class="fas fa-bell"></i>
-                    <i class="fas fa-headphones"></i>
-                </div>
-            </div>
-            
-            <div class="px-6 py-4 flex-1 flex flex-col justify-center space-y-6">
-                <div class="text-center space-y-1.5">
-                    <h2 class="text-2xl font-bold tracking-tight text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">Learn Concept-driven <span class="text-[#4a121a]">Physics Solutions</span></h2>
-                    <p class="text-[10px] text-slate-500 max-w-xs mx-auto leading-relaxed">Access premium locked smart digital classrooms, live testing material volumes and real-time support notes streams instantly.</p>
-                </div>
+        <div id="authModule" class="flex-1 relative overflow-hidden bg-black">
+            <img src="login_background.jpg" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+            <div class="absolute inset-0 bg-black/45"></div>
 
-                <div class="gold-border-card p-5 shadow-md bg-white">
-                    <h3 id="authTitle" class="text-lg font-bold text-center text-slate-800 mb-0.5">Welcome Back</h3>
-                    <p id="authSubtitle" class="text-[11px] text-center text-slate-500 mb-4">Login to unlock your premium batch space</p>
-                    
-                    <form id="authForm" class="space-y-3">
-                        <div id="signupNameField" class="hidden">
-                            <input type="text" id="authName" placeholder="Full Registered Name" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+            <div class="relative h-full overflow-y-auto custom-scroll flex flex-col justify-center items-center px-6 py-10">
+                <div class="w-full max-w-sm rounded-3xl p-6 bg-white/25 backdrop-blur-xl border border-white/40 shadow-2xl">
+
+                    <div class="flex flex-col items-center pb-4 mb-5 border-b border-white/40">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#c99d42] bg-white mb-2 flex items-center justify-center">
+                            <img src="Screenshot2026-05-02175414.jpeg" class="w-full h-full object-cover">
                         </div>
-                        
-                        <input type="email" id="authEmail" required placeholder="Registered Student Email" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
-                        <input type="password" id="authPassword" required placeholder="Secure System Account Password" class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
-                        
+                        <span class="text-sm font-bold tracking-[0.3em] text-white">SCIENCE WORLD</span>
+                    </div>
+
+                    <h2 id="authTitle" class="text-3xl font-bold text-center text-white mb-1 tracking-wide">Login</h2>
+                    <p id="authSubtitle" class="text-[11px] text-center text-white mb-6">Login to unlock your premium batch space</p>
+
+                    <form id="authForm" class="space-y-5">
+                        <div id="signupNameField" class="hidden relative">
+                            <input type="text" id="authName" placeholder="Full Registered Name" class="w-full bg-transparent text-white placeholder-white/70 border-b border-white/50 py-2 pr-7 text-sm focus:outline-none focus:border-[#c99d42]">
+                            <i class="fas fa-user absolute right-0 top-2.5 text-white text-xs"></i>
+                        </div>
+
+                        <div class="relative">
+                            <input type="email" id="authEmail" required placeholder="Email" class="w-full bg-transparent text-white placeholder-white/70 border-b border-white/50 py-2 pr-7 text-sm focus:outline-none focus:border-[#c99d42]">
+                            <i class="fas fa-envelope absolute right-0 top-2.5 text-white text-xs"></i>
+                        </div>
+
+                        <div class="relative">
+                            <input type="password" id="authPassword" required placeholder="Password" class="w-full bg-transparent text-white placeholder-white/70 border-b border-white/50 py-2 pr-7 text-sm focus:outline-none focus:border-[#c99d42]">
+                            <i class="fas fa-lock absolute right-0 top-2.5 text-white text-xs"></i>
+                        </div>
+
                         <div id="authBatchSelectionWrapper">
-                            <select id="authClass" class="w-full bg-slate-50 text-slate-800 border border-[#ebdcb9] rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-[#c99d42]">
+                            <select id="authClass" class="w-full bg-transparent text-white border-b border-white/50 py-2 text-xs focus:outline-none focus:border-[#c99d42]">
                                 <option value="" class="text-slate-800">Select Targeted Batch Room</option>
                                 <option value="11th" class="text-slate-800">Class 11th (Foundation)</option>
                                 <option value="12th" class="text-slate-800">Class 12th (Target Batch)</option>
                             </select>
                         </div>
-                        
-                        <button type="submit" id="authBtn" class="w-full bg-[#4a121a] text-white font-bold py-2.5 rounded-xl text-xs tracking-wide shadow-md mt-1">Sign In to Dashboard</button>
+
+                        <div class="flex justify-between items-center text-[11px] pt-1">
+                            <label class="flex items-center gap-1.5 text-white">
+                                <input type="checkbox" class="w-3 h-3 accent-[#c99d42]"> Remember me
+                            </label>
+                            <a href="javascript:void(0)" class="text-white hover:text-[#c99d42] underline">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" id="authBtn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-2xl text-sm tracking-wide shadow-md mt-1">Login</button>
                     </form>
 
-                    <div class="relative flex py-3 items-center">
-                        <div class="flex-1 border-t border-slate-200"></div>
-                        <span class="flex-shrink mx-3 text-[10px] text-slate-400">Or Access via Integration</span>
-                        <div class="flex-1 border-t border-slate-200"></div>
+                    <div class="relative flex py-4 items-center">
+                        <div class="flex-1 border-t border-white/40"></div>
+                        <span class="flex-shrink mx-3 text-[10px] text-white">Or Access via Integration</span>
+                        <div class="flex-1 border-t border-white/40"></div>
                     </div>
 
-                    <button type="button" onclick="handleGoogleLogin()" class="w-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl text-xs flex justify-center items-center gap-2 shadow-sm">
-                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-4 h-4 object-contain">
+                    <button type="button" onclick="handleGoogleLogin()" class="w-full border border-white/50 bg-white/10 hover:bg-white/25 text-white font-medium py-2.5 px-4 rounded-2xl text-xs flex justify-center items-center gap-2">
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-4 h-4 object-contain bg-white rounded-full p-0.5">
                         <span>Connect with Google Account</span>
                     </button>
-                </div>
 
-                <div class="text-center">
-                    <p class="text-xs text-slate-500"><span id="authToggleText">New Student?</span> <a href="javascript:void(0)" onclick="toggleAuthMode()" id="authToggleBtn" class="text-[#c99d42] font-semibold underline ml-0.5">Create Workspace Account</a></p>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-white"><span id="authToggleText">New Student?</span> <a href="javascript:void(0)" onclick="toggleAuthMode()" id="authToggleBtn" class="text-[#c99d42] font-semibold underline ml-0.5">Create Workspace Account</a></p>
+                    </div>
                 </div>
-            </div>
-
-            <div class="bg-[#4a121a] py-2 text-center text-[9px] text-[#ebdcb9] border-t border-[#c99d42]/20">
-                &copy; 2026 Science World BY RK PHYSICS. Dedicated Smartphone App Space Portal.
             </div>
         </div>
 
         <div id="appCore" class="hidden flex-1 flex flex-col overflow-hidden bg-[#fffdf9]">
             
-            <div class="brand-header-gradient px-4 py-3 flex justify-between items-center shadow-md">
-                <div class="flex items-center gap-2.5">
-                    <img id="userAvatar" src="https://www.w3schools.com/howto/img_avatar.png" class="w-9 h-9 rounded-full object-cover border-2 border-[#c99d42] bg-white">
-                    <div>
-                        <h4 id="userName" class="text-xs font-bold text-white tracking-wide truncate max-w-[130px]">Student</h4>
-                        <span id="userClassBadge" class="text-[9px] text-[#ebdcb9] block font-medium mt-0.5">Matrix Space</span>
+            <div class="brand-header-gradient px-3 py-2.5 flex justify-between items-center shadow-md gap-2">
+                <button onclick="openAppSidebar()" class="text-white hover:text-[#c99d42] transition-colors text-base w-8 h-8 flex items-center justify-center flex-shrink-0"><i class="fas fa-bars"></i></button>
+
+                <div class="flex-1 flex flex-col items-center min-w-0">
+                    <span class="text-[10px] font-extrabold tracking-widest text-white leading-none">SCIENCE <span class="text-[#c99d42]">WORLD</span></span>
+                    <div class="flex items-center gap-1.5 mt-1 max-w-full">
+                        <img id="userAvatar" src="https://www.w3schools.com/howto/img_avatar.png" class="w-5 h-5 rounded-full object-cover border border-[#c99d42] bg-white flex-shrink-0">
+                        <h4 id="userName" class="text-[10px] font-semibold text-[#ebdcb9] tracking-wide truncate max-w-[120px]">Student</h4>
+                        <span id="userClassBadge" class="hidden">Matrix Space</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button id="adminToggleViewBtn" class="hidden bg-[#c99d42] text-[#4a121a] font-extrabold text-[9px] px-2.5 py-1 rounded-md tracking-wider shadow-md" onclick="toggleAdminViewMode()">ADMIN MODULE</button>
-                    
-                    <button onclick="openNotifications()" class="relative text-white hover:text-[#c99d42] transition-colors">
-                        <i class="fas fa-bell text-sm"></i>
-                        <span id="notificationDot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-                    </button>
-                    <button onclick="navigateToView('profile')" class="text-white hover:text-[#c99d42] transition-colors">
-                        <i class="fas fa-headphones text-sm"></i>
-                    </button>
-                    
-                    <button onclick="logoutSession()" class="text-slate-300 hover:text-red-400 text-sm ml-1"><i class="fas fa-power-off"></i></button>
-                </div>
+
+                <button onclick="openNotifications()" class="relative text-white hover:text-[#c99d42] transition-colors w-8 h-8 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-bell text-sm"></i>
+                    <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                </button>
             </div>
 
             <div id="mainWorkspaceScroll" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
                 
-                <div id="studentHomeView" class="space-y-4">
+                <div id="studentHomeView" class="space-y-5">
                     
                     <div class="relative w-full overflow-hidden rounded-2xl border border-[#ebdcb9] bg-slate-900 h-40 group">
                         <div id="appMediaCarouselTrack" class="w-full h-full relative"></div>
                         <button onclick="triggerManualCarouselShift(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs z-30 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-chevron-left"></i></button>
                         <button onclick="triggerManualCarouselShift(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs z-30 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-chevron-right"></i></button>
+                        <button onclick="toggleCarouselMute()" id="carouselMuteToggleBtn" class="absolute bottom-2 right-2 bg-black/50 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs z-30"><i class="fas fa-volume-mute"></i></button>
                     </div>
 
                     <div>
@@ -275,12 +343,32 @@
                     </div>
                 </div>
 
+                <div id="batchesListView" class="hidden space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800 truncate">Your Batches</h3>
+                    <div id="batchesCatalogGridTab" class="space-y-4"></div>
+                </div>
+
+                <div id="myDocsView" class="hidden space-y-4">
+                    <div class="flex items-center gap-2">
+                        <button onclick="navigateBackToHomeFromMyDocs()" class="bg-[#4a121a] text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+                        <h3 class="text-sm font-bold text-slate-800 truncate">MyDocs · Set Your Targets</h3>
+                    </div>
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <div class="flex gap-2">
+                            <input type="text" id="newStudentTargetInput" placeholder="Add a new target (e.g. Finish Chapter 3)..." class="flex-1 border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                            <button onclick="addStudentTarget()" class="bg-[#4a121a] text-white px-4 rounded-xl text-xs font-bold flex-shrink-0">Add</button>
+                        </div>
+                    </div>
+                    <div id="studentTargetsListContainer" class="space-y-2"></div>
+                </div>
+
                 <div id="batchFoldersView" class="hidden space-y-4">
                     <div class="flex items-center gap-2">
-                        <button onclick="navigateBackToBatches()" class="bg-[#4a121a] text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+                        <button onclick="navigateBackFromBatchFolders()" class="bg-[#4a121a] text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-arrow-left mr-1"></i> Back</button>
                         <h3 id="currentBatchTitleHeader" class="text-sm font-bold text-slate-800 truncate">Folders Panel</h3>
                     </div>
-                    <div id="foldersCatalogGrid" class="space-y-3"></div>
+                    <div id="foldersCatalogGrid" class="grid grid-cols-3 gap-4"></div>
+                    <div id="batchFolderSectionsBanners" class="space-y-3"></div>
                 </div>
 
                 <div id="folderContentsView" class="hidden space-y-4">
@@ -441,6 +529,23 @@
                     </div>
 
                     <div class="gold-border-card p-4 space-y-3 bg-white">
+                        <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-shapes mr-1 text-[#c99d42]"></i> Home Sections Manager</h4>
+                        <p class="text-[10px] text-slate-400 leading-relaxed">Naye custom promo sections add karein — yeh student ko unke batch ke folder page par banner card ki tarah dikhenge, aur sidebar me bhi list honge. Naye sections neeche list me add hote jayenge.</p>
+                        <input type="text" id="adminNewSectionTitle" placeholder="Section Title (e.g. Shop)" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                        <textarea id="adminNewSectionDescription" placeholder="Short description (e.g. Explore study materials, books, test series & more!)" rows="2" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none resize-none"></textarea>
+                        <div id="sectionIconDragZone" class="border border-dashed border-[#ebdcb9] p-3 text-center rounded-xl text-xs text-slate-500 cursor-pointer min-h-[55px] flex items-center justify-center bg-slate-50">
+                            <span class="drop-text">Click / Drop Banner Background Image Here</span>
+                        </div>
+                        <input type="file" id="sectionIconFilePicker" accept="image/*" class="hidden">
+                        <input type="url" id="adminNewSectionUrl" placeholder="Redirect URL (https://...)" class="w-full border border-[#ebdcb9] rounded-xl p-2.5 text-xs bg-slate-50 text-slate-800 focus:outline-none">
+                        <button onclick="adminAddHomeSection()" class="w-full bg-[#4a121a] text-white py-2 rounded-xl text-xs font-bold">Add Section</button>
+                        <div class="border-t border-[#ebdcb9] pt-3 space-y-2">
+                            <span class="text-[10px] font-bold text-slate-400 block uppercase tracking-wide">Active Sections</span>
+                            <div id="adminHomeSectionsManagerGrid" class="grid grid-cols-3 gap-3"></div>
+                        </div>
+                    </div>
+
+                    <div class="gold-border-card p-4 space-y-3 bg-white">
                         <h4 class="text-xs font-bold text-[#4a121a] uppercase tracking-wider"><i class="fas fa-users-gear mr-1 text-[#c99d42]"></i> Workspace Authorization Matrix</h4>
                         <div id="adminStudentManagementRosterGrid" class="space-y-3"></div>
                     </div>
@@ -449,7 +554,8 @@
             </div>
 
             <div class="h-14 bg-white border-t border-[#ebdcb9] flex justify-around items-center text-slate-400 text-xs shadow-lg relative z-10">
-                <button onclick="navigateToView('home')" id="tabNavHome" class="flex flex-col items-center gap-0.5 text-[#4a121a] font-bold"><i class="fas fa-th-large text-base"></i><span class="text-[9px] tracking-wide">VAULT</span></button>
+                <button onclick="navigateToView('home')" id="tabNavHome" class="flex flex-col items-center gap-0.5 text-[#4a121a] font-bold"><i class="fas fa-th-large text-base"></i><span class="text-[9px] tracking-wide">HOME</span></button>
+                <button onclick="navigateToView('batches')" id="tabNavBatches" class="flex flex-col items-center gap-0.5"><i class="fas fa-layer-group text-base"></i><span class="text-[9px] tracking-wide">BATCHES</span></button>
                 <button onclick="navigateToView('chat')" id="tabNavChat" class="flex flex-col items-center gap-0.5 relative">
                     <div id="chatUnseenBadgeCounter" class="absolute -top-1.5 -right-2 bg-red-600 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center hidden">0</div>
                     <i class="fas fa-comments text-base"></i><span class="text-[9px] tracking-wide">CHAT DESK</span>
@@ -499,33 +605,48 @@
         
         window.carouselSlideIndex = 0;
         window.carouselInterval = null;
+        window.carouselMuted = true;
         window.appLaunchTimerPointerRef = null;
+        window.autoBatchRedirectDone = false;
 
-        // Custom Push Notification Engine Logic
-        window.triggerPushPermissionLogic = function() {
-            if (activeSessionUser && activeSessionUser.email !== ADMIN_EMAIL) {
-                window.OneSignalDeferred = window.OneSignalDeferred || [];
-                window.OneSignalDeferred.push(async function(OneSignal) {
-                    let isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-                    if (!isSubscribed) {
-                        document.getElementById('customPushPromptModal').classList.remove('hidden');
-                    }
-                });
-            }
+        // --- UNIFIED BRAND LOADER: logo on top + typing effect text below, used everywhere something loads ---
+        window._brandLoaderIdCounter = 0;
+
+        window.startBrandTypingEffect = (spanId, fullText) => {
+            const el = document.getElementById(spanId);
+            if(!el) return;
+            let i = 0, deleting = false;
+            const tick = () => {
+                const node = document.getElementById(spanId);
+                if(!node) return; // container gone / replaced, stop looping
+                if(!deleting) {
+                    i++;
+                    node.innerText = fullText.slice(0, i);
+                    if(i >= fullText.length) { deleting = true; setTimeout(tick, 900); return; }
+                } else {
+                    i--;
+                    node.innerText = fullText.slice(0, i);
+                    if(i <= 0) { deleting = false; setTimeout(tick, 350); return; }
+                }
+                setTimeout(tick, deleting ? 35 : 65);
+            };
+            tick();
         };
 
-        window.handlePushAllow = function() {
-            document.getElementById('customPushPromptModal').classList.add('hidden');
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-            window.OneSignalDeferred.push(function(OneSignal) {
-                OneSignal.Display.permissionPromptDisplay();
-            });
+        window.injectBrandLoader = (containerId, text) => {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            window._brandLoaderIdCounter++;
+            const uid = 'brandTypeTxt_' + window._brandLoaderIdCounter;
+            container.innerHTML = `
+                <div class="brand-loader-widget">
+                    <div class="brand-loader-logo-wrap"><img src="Screenshot2026-05-02175414.jpeg" alt="loading"></div>
+                    <p class="brand-loader-typing-text" id="${uid}"></p>
+                </div>`;
+            window.startBrandTypingEffect(uid, text);
         };
 
-        window.handlePushSkip = function() {
-            document.getElementById('customPushPromptModal').classList.add('hidden');
-            showToastNotification("Notification setup skipped.");
-        };
+        window.startBrandTypingEffect('splashTypingLine', 'Loading your dashboard...');
 
         setTimeout(() => {
             const splash = document.getElementById('appSplashScreen');
@@ -653,6 +774,9 @@
             }, 'image');
             configureDragEngine('materialDpDragZone', 'materialDpFilePicker', (res) => {
                 window.b64MaterialThumbnailDp = res;
+            }, 'image');
+            configureDragEngine('sectionIconDragZone', 'sectionIconFilePicker', (res) => {
+                window.b64HomeSectionIcon = res;
             }, 'image');
         }
 
@@ -810,11 +934,23 @@
             let nextVideo = slides[window.carouselSlideIndex].querySelector('video');
             if(nextVideo) {
                 nextVideo.currentTime = 0;
+                nextVideo.muted = window.carouselMuted;
                 nextVideo.play().catch(e => console.log(e));
                 if(window.carouselInterval) clearInterval(window.carouselInterval);
             } else {
                 startCarousel();
             }
+        };
+
+        window.toggleCarouselMute = () => {
+            window.carouselMuted = !window.carouselMuted;
+            const track = document.getElementById('appMediaCarouselTrack');
+            const btn = document.getElementById('carouselMuteToggleBtn');
+            if(track) {
+                const activeVideo = track.children[window.carouselSlideIndex] ? track.children[window.carouselSlideIndex].querySelector('video') : null;
+                if(activeVideo) activeVideo.muted = window.carouselMuted;
+            }
+            if(btn) btn.innerHTML = window.carouselMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
         };
 
         function startCarousel() {
@@ -855,7 +991,7 @@
                     } else {
                         code += `
                             <div class="absolute inset-0 w-full h-full transition-opacity duration-1000 ${activeClass}">
-                                <video class="w-full h-full object-cover" autoplay loop src="${item.url}" onended="triggerManualCarouselShift(1)"></video>
+                                <video class="w-full h-full object-cover" autoplay muted playsinline src="${item.url}" onended="triggerManualCarouselShift(1)"></video>
                             </div>`;
                         adminRemoverCode += `
                             <div class="relative rounded-lg overflow-hidden border h-16 bg-slate-900 flex items-center justify-center text-white">
@@ -898,6 +1034,72 @@
 
             await setDoc(doc(db, "app_settings", "support_node"), { phone: p, email: e, address: a });
             showToastNotification("Help Desk metadata updated instantly!");
+        };
+
+        window._cachedHomeSections = [];
+        window.b64HomeSectionIcon = "";
+
+        function initHomeSectionsListener() {
+            onSnapshot(query(collection(db, "app_home_sections"), orderBy("timestamp", "asc")), (snap) => {
+                const list = [];
+                snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+                window._cachedHomeSections = list;
+                renderBatchFolderSectionsBanners();
+                renderSidebarSectionsList();
+
+                const adminGrid = document.getElementById('adminHomeSectionsManagerGrid');
+                if(adminGrid) {
+                    let adminCode = "";
+                    list.forEach(sec => {
+                        adminCode += `
+                            <div class="flex flex-col items-center gap-1 relative">
+                                <div class="w-14 h-14 rounded-xl bg-white shadow-sm border border-[#ebdcb9] flex items-center justify-center overflow-hidden">
+                                    ${sec.dp ? `<img src="${sec.dp}" class="w-full h-full object-cover">` : `<i class="fas fa-star text-[#c99d42]"></i>`}
+                                </div>
+                                <span class="text-[9px] text-slate-600 text-center truncate w-14">${sec.title}</span>
+                                <button onclick="adminDeleteHomeSection('${sec.id}')" class="absolute -top-1 -right-1 bg-red-600 text-white w-4 h-4 rounded-full text-[8px] flex items-center justify-center"><i class="fas fa-times"></i></button>
+                            </div>
+                        `;
+                    });
+                    adminGrid.innerHTML = adminCode || '<p class="col-span-3 text-[10px] text-slate-400 text-center py-2">No custom sections yet.</p>';
+                }
+            });
+        }
+
+        function renderSidebarSectionsList() {
+            const container = document.getElementById('sidebarSectionsList');
+            if(!container) return;
+            let code = "";
+            (window._cachedHomeSections || []).forEach(sec => {
+                code += `<button onclick="handleHomeSectionTap('${(sec.url || '').replace(/'/g, "\\'")}'); closeAppSidebar();" class="w-full flex items-center gap-2.5 text-slate-700 text-xs font-semibold py-2.5 px-2 rounded-xl hover:bg-slate-50">
+                    <div class="w-4 h-4 rounded overflow-hidden flex items-center justify-center flex-shrink-0">
+                        ${sec.dp ? `<img src="${sec.dp}" class="w-full h-full object-cover">` : `<i class="fas fa-star text-[#c99d42] text-[10px]"></i>`}
+                    </div> ${sec.title}
+                </button>`;
+            });
+            container.innerHTML = code;
+        }
+
+        window.adminAddHomeSection = async () => {
+            const title = document.getElementById('adminNewSectionTitle').value.trim();
+            const description = document.getElementById('adminNewSectionDescription').value.trim();
+            const url = document.getElementById('adminNewSectionUrl').value.trim();
+            if(!title || !url) return showToastNotification("Please provide section title and redirect URL!");
+
+            await addDoc(collection(db, "app_home_sections"), { title, description, url, dp: window.b64HomeSectionIcon || "", timestamp: serverTimestamp() });
+            showToastNotification("New section deployed to batch folder pages & sidebar!");
+            document.getElementById('adminNewSectionTitle').value = "";
+            document.getElementById('adminNewSectionDescription').value = "";
+            document.getElementById('adminNewSectionUrl').value = "";
+            window.b64HomeSectionIcon = "";
+            document.getElementById('sectionIconDragZone').innerHTML = `<span class="drop-text">Click / Drop Banner Background Image Here</span>`;
+        };
+
+        window.adminDeleteHomeSection = async (id) => {
+            if(confirm("Remove this section from the home screen?")) {
+                await deleteDoc(doc(db, "app_home_sections", id));
+                showToastNotification("Section removed.");
+            }
         };
 
         function initSupportStaticMetadataLoader() {
@@ -995,6 +1197,7 @@
             modal.classList.remove('hidden');
             setTimeout(() => { modalContent.classList.remove('translate-y-full'); }, 50);
             if(dot) dot.classList.add('hidden'); 
+            window.injectBrandLoader('notificationList', 'Loading notifications...');
 
             try {
                 const targetedCollectionNodeStr = (currentStudentVerifiedClassNodeStr === "12th") ? "app_broadcast_chat_12th" : "app_broadcast_chat_11th";
@@ -1234,16 +1437,25 @@
             document.getElementById('materialDpDragZone').innerHTML = `<span class="drop-text">Drag & Drop Content Graphic Thumbnail Icon DP</span>`;
         };
 
-        async function syncHomeDirectoryMatrixDisplay() {
+        async function fetchAccessibleBatchesList() {
             const bSnap = await getDocs(query(collection(db, "app_batches"), orderBy("timestamp", "desc")));
-            let code = "";
-            
+            let list = [];
             bSnap.forEach(docObj => {
                 const node = docObj.data();
-                const isUserAuthorized = (activeSessionUser.email === ADMIN_EMAIL) || 
-                                         (node.access === 'public') || 
-                                         (window.currentUserAuthBatches && window.currentUserAuthBatches.includes(docObj.id));
+                const isDirectlyAssigned = window.currentUserAuthBatches && window.currentUserAuthBatches.includes(docObj.id);
+                const isUserAuthorized = (activeSessionUser.email === ADMIN_EMAIL) ||
+                                         (node.access === 'public') ||
+                                         isDirectlyAssigned;
+                list.push({ id: docObj.id, title: node.title, dp: node.dp, access: node.access, isUserAuthorized, isDirectlyAssigned });
+            });
+            return list;
+        }
 
+        function renderBatchesListCardsUI(containerId, list) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            let code = "";
+            list.forEach(node => {
                 code += `
                     <div class="gold-border-card bg-white overflow-hidden shadow-sm relative">
                         <div class="relative h-36 bg-slate-100">
@@ -1254,26 +1466,106 @@
                         </div>
                         <div class="p-3 space-y-2">
                             <h4 class="text-xs font-bold text-slate-800 tracking-wide">${node.title}</h4>
-                            ${isUserAuthorized ? `
-                                <button onclick="openSeparateFoldersPage('${docObj.id}', '${node.title.replace(/'/g, "\\'")}')" class="w-full bg-[#4a121a] text-white font-bold text-[11px] py-2 rounded-xl uppercase tracking-wider">Enter Batch Space</button>
+                            ${node.isUserAuthorized ? `
+                                <button onclick="openSeparateFoldersPage('${node.id}', '${node.title.replace(/'/g, "\\'")}', '${containerId === 'coursesCatalogGrid' ? 'home' : 'batches'}')" class="w-full bg-[#4a121a] text-white font-bold text-[11px] py-2 rounded-xl uppercase tracking-wider">Enter Batch Space</button>
                             ` : `
                                 <button class="w-full bg-[#ebdcb9] text-slate-600 font-bold text-[11px] py-2 rounded-xl uppercase tracking-wider cursor-not-allowed">Batch Space Locked</button>
                             `}
                         </div>
                         ${globalCurrentViewMode === 'admin' ? `
-                            <button onclick="adminTrashBatchNode('${docObj.id}')" class="absolute bottom-3 right-3 text-red-600 bg-red-50 text-[9px] font-bold px-2 py-1 rounded border border-red-200">Drop</button>
+                            <button onclick="adminTrashBatchNode('${node.id}')" class="absolute bottom-3 right-3 text-red-600 bg-red-50 text-[9px] font-bold px-2 py-1 rounded border border-red-200">Drop</button>
                         ` : ''}
                     </div>
                 `;
             });
-            document.getElementById('coursesCatalogGrid').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-6">No premium classrooms available.</p>';
+            container.innerHTML = code || '<p class="text-xs text-center text-slate-400 py-6">No premium classrooms available.</p>';
         }
 
-        window.openSeparateFoldersPage = async (batchId, batchTitle) => {
+        async function syncHomeDirectoryMatrixDisplay() {
+            const list = await fetchAccessibleBatchesList();
+            window._cachedAccessibleBatches = list;
+
+            const assignedIds = window.currentUserAuthBatches || [];
+
+            // Student jisne batch le rakha hai, uske liye home page hi seedha uss batch ka page hoga
+            if(globalCurrentViewMode === 'student' && !window.autoBatchRedirectDone && assignedIds.length === 1) {
+                window.autoBatchRedirectDone = true;
+                const assignedBatch = list.find(b => b.id === assignedIds[0]);
+                if(assignedBatch) {
+                    openSeparateFoldersPage(assignedBatch.id, assignedBatch.title, 'home');
+                    return;
+                }
+            }
+
+            // Naye student (bina batch wale) ke liye wohi batches page home par khulega
+            renderBatchesListCardsUI('coursesCatalogGrid', list);
+        }
+
+        window.openBatchesTabPage = async () => {
+            window.injectBrandLoader('batchesCatalogGridTab', 'Loading batches...');
+            const list = await fetchAccessibleBatchesList();
+            renderBatchesListCardsUI('batchesCatalogGridTab', list);
+        };
+
+        window.openMyDocsSection = () => {
+            document.getElementById('studentHomeView').classList.add('hidden');
+            document.getElementById('batchesListView').classList.add('hidden');
+            document.getElementById('myDocsView').classList.remove('hidden');
+            initStudentTargetsListener();
+        };
+
+        window.navigateBackToHomeFromMyDocs = () => {
+            if(window._targetsUnsub) { window._targetsUnsub(); window._targetsUnsub = null; }
+            navigateToView('home');
+        };
+
+        function initStudentTargetsListener() {
+            window.injectBrandLoader('studentTargetsListContainer', 'Loading your targets...');
+            if(window._targetsUnsub) window._targetsUnsub();
+            window._targetsUnsub = onSnapshot(query(collection(db, "users", activeSessionUser.uid, "targets"), orderBy("timestamp", "desc")), (snap) => {
+                let code = "";
+                snap.forEach(d => {
+                    const t = d.data();
+                    code += `
+                        <div class="gold-border-card p-3 flex items-center gap-3 bg-white">
+                            <button onclick="toggleStudentTargetDone('${d.id}', ${!!t.done})" class="w-6 h-6 rounded-lg border-2 flex-shrink-0 flex items-center justify-center ${t.done ? 'bg-[#4a121a] border-[#4a121a]' : 'border-[#ebdcb9]'}">
+                                ${t.done ? '<i class="fas fa-check text-white text-[10px]"></i>' : ''}
+                            </button>
+                            <span class="flex-1 text-xs ${t.done ? 'line-through text-slate-400' : 'text-slate-700'}">${t.text}</span>
+                            <button onclick="deleteStudentTarget('${d.id}')" class="text-red-500 hover:text-red-700 text-xs flex-shrink-0"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+                document.getElementById('studentTargetsListContainer').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-10">No targets set yet. Add your first target above!</p>';
+            });
+        }
+
+        window.addStudentTarget = async () => {
+            const input = document.getElementById('newStudentTargetInput');
+            const text = input.value.trim();
+            if(!text) return showToastNotification("Please type a target first!");
+            await addDoc(collection(db, "users", activeSessionUser.uid, "targets"), { text, done: false, timestamp: serverTimestamp() });
+            input.value = "";
+        };
+
+        window.toggleStudentTargetDone = async (id, currentDone) => {
+            await updateDoc(doc(db, "users", activeSessionUser.uid, "targets", id), { done: !currentDone });
+        };
+
+        window.deleteStudentTarget = async (id) => {
+            await deleteDoc(doc(db, "users", activeSessionUser.uid, "targets", id));
+            showToastNotification("Target removed.");
+        };
+
+        window.openSeparateFoldersPage = async (batchId, batchTitle, origin) => {
+            window.batchFoldersOrigin = origin || window.batchFoldersOrigin || 'batches';
             document.getElementById('currentBatchTitleHeader').innerText = batchTitle;
             document.getElementById('studentHomeView').classList.add('hidden');
+            document.getElementById('batchesListView').classList.add('hidden');
             document.getElementById('folderContentsView').classList.add('hidden');
             document.getElementById('batchFoldersView').classList.remove('hidden');
+            window.injectBrandLoader('foldersCatalogGrid', 'Loading folders...');
+            document.getElementById('batchFolderSectionsBanners').innerHTML = "";
 
             const fSnap = await getDocs(query(collection(db, "app_folders"), where("parentBatchId", "==", batchId)));
             let code = "";
@@ -1282,29 +1574,58 @@
                 
                 if (!folder.parentFolderId || folder.parentFolderId === "") {
                     code += `
-                        <div onclick="openSeparateContentsPage('${fDoc.id}', '${folder.title.replace(/'/g, "\\'")}', '${batchId}')" class="gold-border-card bg-white p-3 flex items-center gap-3 shadow-sm hover:border-[#4a121a] transition-all cursor-pointer">
-                            <img src="${folder.dp || 'https://via.placeholder.com/150'}" class="w-12 h-12 object-cover rounded-xl border">
-                            <div class="flex-1">
-                                <h4 class="text-xs font-bold text-slate-800">${folder.title}</h4>
-                                <p class="text-[9px] text-slate-400 mt-0.5">Click to view nested folders & contents</p>
+                        <div onclick="openSeparateContentsPage('${fDoc.id}', '${folder.title.replace(/'/g, "\\'")}', '${batchId}')" class="flex flex-col items-center gap-1.5 cursor-pointer">
+                            <div class="w-16 h-16 rounded-2xl bg-white shadow-md border border-[#ebdcb9] flex items-center justify-center overflow-hidden active:scale-95 transition-transform">
+                                <img src="${folder.dp || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover">
                             </div>
-                            <div class="text-[#4a121a] text-xs px-2"><i class="fas fa-chevron-right"></i></div>
+                            <span class="text-[10px] font-semibold text-slate-700 text-center truncate w-16">${folder.title}</span>
+                            <span class="text-[8px] text-slate-400 text-center truncate w-16">Open Folder</span>
                         </div>
                     `;
                 }
             });
-            document.getElementById('foldersCatalogGrid').innerHTML = code || '<p class="text-xs text-center text-slate-400 py-10">No folder containers mapped to this structural node.</p>';
+            document.getElementById('foldersCatalogGrid').innerHTML = code || '<p class="col-span-3 text-xs text-center text-slate-400 py-10">No folder containers mapped to this structural node.</p>';
+
+            renderBatchFolderSectionsBanners();
         };
 
-        window.navigateBackToBatches = () => {
+        function renderBatchFolderSectionsBanners() {
+            const container = document.getElementById('batchFolderSectionsBanners');
+            if(!container) return;
+            let code = "";
+            (window._cachedHomeSections || []).forEach(sec => {
+                code += `
+                    <div class="relative rounded-2xl overflow-hidden shadow-md h-28 flex items-center" style="background: ${sec.dp ? `url('${sec.dp}') center/cover no-repeat` : 'linear-gradient(135deg,#4a121a,#7a2535)'};">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+                        <div class="relative z-10 p-4 max-w-[75%]">
+                            <h4 class="text-sm font-bold text-white">${sec.title}</h4>
+                            <p class="text-[10px] text-slate-200 mt-0.5 leading-snug line-clamp-2">${sec.description || ''}</p>
+                            <button onclick="handleHomeSectionTap('${(sec.url || '').replace(/'/g, "\\'")}')" class="mt-2 bg-[#c99d42] text-[#4a121a] text-[10px] font-bold px-3 py-1.5 rounded-full inline-flex items-center gap-1">Visit ${sec.title} <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = code;
+        }
+
+        window.handleHomeSectionTap = (url) => {
+            if(url) window.open(url, '_blank');
+        };
+
+        window.navigateBackFromBatchFolders = () => {
             document.getElementById('batchFoldersView').classList.add('hidden');
-            document.getElementById('studentHomeView').classList.remove('hidden');
+            if(window.batchFoldersOrigin === 'home') {
+                navigateToView('home');
+            } else {
+                navigateToView('batches');
+            }
         };
 
         window.openSeparateContentsPage = async (folderId, folderTitle, batchId) => {
             document.getElementById('currentFolderTitleHeader').innerText = folderTitle;
             document.getElementById('batchFoldersView').classList.add('hidden');
             document.getElementById('folderContentsView').classList.remove('hidden');
+            window.injectBrandLoader('contentsCatalogGrid', 'Loading materials...');
 
             let code = "";
 
@@ -1433,7 +1754,24 @@
             }
         };
 
-        window.logoutSession = () => signOut(auth);
+        window.logoutSession = () => {
+            closeAppSidebar();
+            signOut(auth);
+        };
+
+        window.openAppSidebar = () => {
+            document.getElementById('appSidebarOverlay').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('appSidebarOverlay').classList.remove('opacity-0');
+                document.getElementById('appSidebarPanel').classList.remove('-translate-x-full');
+            }, 20);
+        };
+
+        window.closeAppSidebar = () => {
+            document.getElementById('appSidebarOverlay').classList.add('opacity-0');
+            document.getElementById('appSidebarPanel').classList.add('-translate-x-full');
+            setTimeout(() => { document.getElementById('appSidebarOverlay').classList.add('hidden'); }, 300);
+        };
 
         onAuthStateChanged(auth, async (session) => {
             if(session) {
@@ -1454,9 +1792,12 @@
                     document.getElementById('userName').innerText = data.name || "Student";
                     document.getElementById('userClassBadge').innerText = `Class ${currentStudentVerifiedClassNodeStr} Matrix`;
                     document.getElementById('profileInputName').value = data.name || "";
+                    document.getElementById('sidebarUserName').innerText = data.name || "Student";
+                    document.getElementById('sidebarUserClass').innerText = `Class ${currentStudentVerifiedClassNodeStr} Matrix`;
                     if(data.avatarUrl) {
                         document.getElementById('userAvatar').src = data.avatarUrl;
                         document.getElementById('profilePreviewImage').src = data.avatarUrl;
+                        document.getElementById('sidebarUserAvatar').src = data.avatarUrl;
                     }
                 }
 
@@ -1472,6 +1813,7 @@
                 initStudentPrivilegeRosterPipelineListener();
                 initGlobalCarouselBannerListener();
                 initSupportStaticMetadataLoader();
+                initHomeSectionsListener();
                 initBroadcastChatFeedSync();
                 initGlobalOverallNoticeListener();
                 
@@ -1482,11 +1824,8 @@
                 
                 navigateToView('home');
 
-                setTimeout(() => {
-                    window.triggerPushPermissionLogic();
-                }, 1500);
-
             } else {
+                window.autoBatchRedirectDone = false;
                 document.getElementById('authModule').classList.remove('hidden');
                 document.getElementById('appCore').classList.add('hidden');
             }
@@ -1494,13 +1833,17 @@
 
         window.navigateToView = (view) => {
             internalCurrentActiveViewTab = view;
-            ['studentHomeView', 'batchFoldersView', 'folderContentsView', 'chatRoomView', 'adminControlView', 'profileManagementView'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            ['tabNavHome', 'tabNavChat', 'tabNavProfile'].forEach(id => document.getElementById(id).classList.remove('text-[#4a121a]', 'font-bold'));
+            ['studentHomeView', 'batchesListView', 'myDocsView', 'batchFoldersView', 'folderContentsView', 'chatRoomView', 'adminControlView', 'profileManagementView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['tabNavHome', 'tabNavBatches', 'tabNavChat', 'tabNavProfile'].forEach(id => document.getElementById(id).classList.remove('text-[#4a121a]', 'font-bold'));
 
             if(view === 'home') {
                 document.getElementById('tabNavHome').classList.add('text-[#4a121a]', 'font-bold');
                 if(globalCurrentViewMode === 'admin') document.getElementById('adminControlView').classList.remove('hidden');
-                else document.getElementById('studentHomeView').classList.remove('hidden');
+                else { document.getElementById('studentHomeView').classList.remove('hidden'); syncHomeDirectoryMatrixDisplay(); }
+            } else if(view === 'batches') {
+                document.getElementById('tabNavBatches').classList.add('text-[#4a121a]', 'font-bold');
+                document.getElementById('batchesListView').classList.remove('hidden');
+                openBatchesTabPage();
             } else if(view === 'chat') {
                 document.getElementById('tabNavChat').classList.add('text-[#4a121a]', 'font-bold');
                 document.getElementById('chatRoomView').classList.remove('hidden');
